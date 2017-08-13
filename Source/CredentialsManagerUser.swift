@@ -1,6 +1,6 @@
 /*
  -----------------------------------------------------------------------------
- This source file is part of SecurityKit.
+ This source file is part of MedSim.
  
  Copyright 2017 Jon Griffeth
  
@@ -22,43 +22,22 @@
 import Foundation
 
 
-public struct X509AttributeValueType: DERCodable {
-    
-    // MARK: - Properties
-    public var oid   : OID
-    public var value : X509String
+/**
+ Credentials manager for devices.
+ */
+public class CredentialsManagerUser: CredentialsManagerBase {
     
     // MARK: - Initializers
     
-    public init(oid: OID, value: X509String)
+    override public init(for identity: Identity)
     {
-        self.oid   = oid
-        self.value = value
-    }
-    
-    public init(decoder: DERDecoder) throws
-    {
-        let sequence = try decoder.decoderFromSequence()
-        
-        oid   = try OID(decoder: sequence)
-        value = try X509String(decoder: sequence)
-        
-        try sequence.assertAtEnd()
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        let sequence = DEREncoder()
-        
-        sequence.encode(oid)
-        sequence.encode(value)
-        
-        return encoder.encodeSequence(bytes: sequence.bytes)
+        super.init(for: identity)
     }
     
 }
 
 
 // End of File
+
+
+

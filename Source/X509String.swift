@@ -27,7 +27,7 @@ import Foundation
  
  - Requirement: RFC-5280
  */
-public struct X509String: Equatable {
+public struct X509String: Equatable, DERCodable {
     
     // MARK: - Types
     public enum Encoding {
@@ -61,11 +61,57 @@ public struct X509String: Equatable {
         self.encoding = encoding
     }
     
+    /**
+     Initialize instance from decoder.
+     
+     - Requirement: RFC 5280
+     */
+    public init(decoder: DERDecoder) throws
+    {
+        if let tag = decoder.peekTag() {
+            switch tag {
+            case DERCoder.TagIA5String :
+                let bytes: [UInt8] = try decoder.decodeIA5String()
+                self.init(bytes: bytes, encoding: .ia5)
+                
+            case DERCoder.TagPrintableString :
+                let bytes: [UInt8] = try decoder.decodePrintableString()
+                self.init(bytes: bytes, encoding: .printable)
+                
+            case DERCoder.TagUTF8String :
+                let bytes: [UInt8] = try decoder.decodeUTF8String()
+                self.init(bytes: bytes, encoding: .utf8)
+                
+            default :
+                throw SecurityKitError.failed
+            }
+        }
+        else {
+            throw SecurityKitError.failed
+        }
+    }
+    
     // MARK: - Equatable
     
     public static func ==(lhs: X509String, rhs: X509String) -> Bool
     {
         return lhs.string == rhs.string
+    }
+    
+    // MARK: - DERCodable
+    
+    public func encode(encoder: DEREncoder)
+    {
+        switch encoding {
+        case .ia5 :
+            encoder.encodeIA5String(encoded)
+            
+        case .printable :
+            encoder.encodePrintableString(encoded)
+            
+        case .utf8 :
+            encoder.encodeUTF8String(encoded)
+        }
     }
     
     // MARK: - Transcoders

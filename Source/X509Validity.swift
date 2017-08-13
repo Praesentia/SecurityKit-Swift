@@ -27,7 +27,7 @@ import Foundation
  
  - Requirement: RFC-5280
  */
-public struct X509Validity {
+public struct X509Validity: DERCodable {
     
     // MARK: - Properties
     public var period: ClosedRange<Date>
@@ -49,6 +49,37 @@ public struct X509Validity {
     {
         self.init(period: date...date.addingTimeInterval(timeInterval))
     }
+    
+    /**
+     Initialize instance from decoder.
+     
+     - Requirement: RFC 5280
+     */
+    public init(decoder: DERDecoder) throws
+    {
+        let sequence = try decoder.decoderFromSequence()
+        
+        let fromDate  = try sequence.decodeUTCTime()
+        let untilDate = try sequence.decodeUTCTime()
+        
+        try sequence.assert(fromDate <= untilDate)
+        try sequence.assertAtEnd()
+        
+        period = fromDate ... untilDate
+    }
+    
+    // MARK: - DERCodable
+    
+    public func encode(encoder: DEREncoder)
+    {
+        let sequence = DEREncoder()
+        
+        sequence.encodeUTCTime(period.lowerBound)
+        sequence.encodeUTCTime(period.upperBound)
+        
+        encoder.encodeSequence(bytes: sequence.bytes)
+    }
+
     
     // MARK: - Containment
     

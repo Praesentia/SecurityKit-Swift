@@ -27,7 +27,7 @@ import Foundation
  
  - Requirement: RFC-5280
  */
-public struct X509Name: Equatable {
+public struct X509Name: Equatable, DERCodable {
     
     // MARK: - Properties
     public var commonName             : X509String?
@@ -40,7 +40,6 @@ public struct X509Name: Equatable {
     
     public var string : String { return formatString() }
     
-    // MARK: - Private Properties
     public var cache: [UInt8]?
     
     // MARK: - Initializers
@@ -54,8 +53,59 @@ public struct X509Name: Equatable {
      */
     public init(from identity: Identity)
     {
-        commonName = X509String(string: identity.string)
+        commonName = X509String(string: identity.string, encoding: .utf8)
     }
+    
+    public init(decoder: DERDecoder) throws
+    {
+        let sequence = try decoder.decoderFromSequence()
+        
+        commonName             = nil
+        countryName            = nil
+        localityName           = nil
+        stateOrProvinceName    = nil
+        organizationName       = nil
+        organizationalUnitName = nil
+        emailAddress           = nil
+        
+        repeat {
+            let set = try sequence.decoderFromSet()
+            
+            repeat {
+                let attributeTypeValue = try X509AttributeValueType(decoder: set)
+                
+                switch attributeTypeValue.oid {
+                case x520CommonName :
+                    commonName = attributeTypeValue.value
+                    
+                case x520CountryName :
+                    countryName = attributeTypeValue.value
+                    
+                case x520LocalityName :
+                    localityName = attributeTypeValue.value
+                    
+                case x520StateOrProvinceName :
+                    stateOrProvinceName = attributeTypeValue.value
+                    
+                case x520OrganizationName :
+                    organizationName = attributeTypeValue.value
+                    
+                case x520OrganizationalUnitName :
+                    organizationalUnitName = attributeTypeValue.value
+                    
+                case pkcs9EmailAddress :
+                    emailAddress = attributeTypeValue.value
+                    
+                default :
+                    throw SecurityKitError.decodingError
+                }
+                
+            } while set.more
+        } while sequence.more
+        
+        cache = sequence.bytes
+    }
+    
     
     // MARK: - Private
     
@@ -64,7 +114,7 @@ public struct X509Name: Equatable {
         var string = String()
         
         if let commonName = self.commonName {
-            string = string + String(format: "CN=%s", commonName.string)
+            string = commonName.string
         }
         
         return string
@@ -84,6 +134,62 @@ public struct X509Name: Equatable {
             lhs.organizationName       == rhs.organizationName       &&
             lhs.organizationalUnitName == rhs.organizationalUnitName &&
             lhs.emailAddress           == rhs.emailAddress
+    }
+
+    // MARK: - DERCodable
+    
+    public func encode(encoder: DEREncoder)
+    {
+        if let cache = self.cache {
+            encoder.encode(bytes: cache)
+            return
+        }
+        
+        let encoder1 = DEREncoder()
+        
+        if let commonName = commonName {
+            let set = DEREncoder()
+            set.encode(X509AttributeValueType(oid: x520CommonName, value: commonName))
+            encoder1.encodeSet(bytes: set.bytes)
+        }
+        
+        if let countryName = countryName {
+            let set = DEREncoder()
+            set.encode(X509AttributeValueType(oid: x520CountryName, value: countryName))
+            encoder1.encodeSet(bytes: set.bytes)
+        }
+        
+        if let localityName = localityName {
+            let set = DEREncoder()
+            set.encode(X509AttributeValueType(oid: x520LocalityName, value: localityName))
+            encoder1.encodeSet(bytes: set.bytes)
+        }
+        
+        if let stateOrProvinceName = stateOrProvinceName {
+            let set = DEREncoder()
+            set.encode(X509AttributeValueType(oid: x520StateOrProvinceName, value: stateOrProvinceName))
+            encoder1.encodeSet(bytes: set.bytes)
+        }
+        
+        if let organizationName = organizationName {
+            let set = DEREncoder()
+            set.encode(X509AttributeValueType(oid: x520OrganizationName, value: organizationName))
+            encoder1.encodeSet(bytes: set.bytes)
+        }
+        
+        if let organizationalUnitName = organizationalUnitName {
+            let set = DEREncoder()
+            set.encode(X509AttributeValueType(oid: x520OrganizationalUnitName, value: organizationalUnitName))
+            encoder1.encodeSet(bytes: set.bytes)
+        }
+        
+        if let emailAddress = emailAddress {
+            let set = DEREncoder()
+            set.encode(X509AttributeValueType(oid: pkcs9EmailAddress, value: emailAddress))
+            encoder1.encodeSet(bytes: set.bytes)
+        }
+        
+        encoder.encodeSequence(bytes: encoder1.bytes)
     }
     
 }

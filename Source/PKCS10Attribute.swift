@@ -23,40 +23,37 @@ import Foundation
 
 
 /**
- X509 Extended Key Usage
+ PKCS10 Attribute
  
- - Requirement: RFC-5280
+ - Requirement: RFC-2986
  */
-public struct X509ExtendedKeyUsage: DERCodable {
+public struct PKCS10Attribute: DERCodable {
     
     // MARK: - Properties
-    public var purposeIdentifiers = [OID]()
+    public var type   : OID
+    public var values : [UInt8]
+    
+    // MARK: - Initializers
+
+    public init(type: OID, values: [UInt8])
+    {
+        self.type   = type
+        self.values = values
+    }
     
     /**
-     Initialize instance from extension.
+     Initialize instance from decoder.
+     
+     - Requirement: RFC 5280, 4.1
      */
     public init(decoder: DERDecoder) throws
     {
         let sequence = try decoder.decoderFromSequence()
         
-        purposeIdentifiers = []
-        
-        repeat {
-            let purposeIdentifier = try OID(decoder: sequence)
-            purposeIdentifiers.append(purposeIdentifier)
-        } while sequence.more
+        type   = try OID(decoder: sequence)
+        values = try sequence.decodeSet()
         
         try sequence.assertAtEnd()
-    }
-    
-    /**
-     Initialize instance from extension.
-     */
-    public init(from extn: X509Extension) throws
-    {
-        let decoder = DERDecoder(bytes: extn.extnValue)
-        try self.init(decoder: decoder)
-        try decoder.assertAtEnd()
     }
     
     // MARK: - DERCodable
@@ -65,14 +62,15 @@ public struct X509ExtendedKeyUsage: DERCodable {
     {
         let sequence = DEREncoder()
         
-        for purposeIdentifier in purposeIdentifiers {
-            sequence.encode(purposeIdentifier)
-        }
+        sequence.encode(type)
+        sequence.encodeSet(bytes: values)
         
         encoder.encodeSequence(bytes: sequence.bytes)
     }
+    
     
 }
 
 
 // End of File
+

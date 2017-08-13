@@ -1,6 +1,6 @@
 /*
  -----------------------------------------------------------------------------
- This source file is part of SecurityKit.
+ This source file is part of MedKitSecurity.
  
  Copyright 2017 Jon Griffeth
  
@@ -23,44 +23,15 @@ import Foundation
 
 
 /**
- X509 PublicKey
+ Public Key credentials protocol.
  */
-public struct X509PublicKey: DERCodable {
+public protocol PublicKeyCredentials: Credentials {
     
     // MARK: - Properties
-    public var bytes : [UInt8]
-    public var data  : Data { return Data(bytes) }
+    var certificate : Certificate   { get }
+    var chain       : [Certificate] { get }
     
-    // MARK: - Initializers
-    
-    public init(bytes: [UInt8])
-    {
-        self.bytes = bytes
-    }
-    
-    public init(data: Data)
-    {
-        self.init(bytes: [UInt8](data))
-    }
-    
-    /**
-     Initialize instance from decoder.
-     
-     - Requirement: RFC 5280
-     */
-    public init(decoder: DERDecoder) throws
-    {
-        let bytes = try decoder.decodeBitString()
-        
-        self.init(bytes: bytes)
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        encoder.encodeBitString(bytes: [UInt8](data))
-    }
+    func certifyRequest(_ certificationRequest: PCKS10CertificationRequest, completionHandler completion: @escaping (X509Certificate?, Error?) -> Void)
     
 }
 

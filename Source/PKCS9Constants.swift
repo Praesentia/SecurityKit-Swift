@@ -22,8 +22,13 @@
 import Foundation
 
 
-public let pkcs9             = OID(components: [ 1, 2, 840, 113549, 1, 9 ])
-public let pkcs9EmailAddress = OID(prefix: pkcs9, components: [ 1 ])
-
+// RFC 2985
+public let pkcs9                 = OID(components: [ 1, 2, 840, 113549, 1, 9 ])
+public let pkcs9EmailAddress     = OID(prefix: pkcs9, components: [  1 ])
+public let pkcs9UnstructuredName = OID(prefix: pkcs9, components: [  2 ])
+public let pkcs9ContentType      = OID(prefix: pkcs9, components: [  3 ])
+public let pkcs9MessageDigest    = OID(prefix: pkcs9, components: [  4 ])
+public let pkcs9SigningTime      = OID(prefix: pkcs9, components: [  5 ])
+public let pkcs9ExtensionRequest = OID(prefix: pkcs9, components: [ 14 ])
 
 // End of File

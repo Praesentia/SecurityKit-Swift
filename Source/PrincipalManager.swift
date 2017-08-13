@@ -41,7 +41,7 @@ public class PrincipalManager {
     /**
      Initialize instance.
      */
-    private init()
+    public init()
     {
     }
     
@@ -73,8 +73,13 @@ public class PrincipalManager {
     public func updatePrimary(_ principal: Principal?)
     {
         primary = principal
-        for observer in observers {
-            observer.principalManagerDidUpdatePrimary(self)
+        
+        if !observers.isEmpty {
+            DispatchQueue.main.async {
+                for observer in self.observers {
+                    observer.principalManagerDidUpdatePrimary(self)
+                }
+            }
         }
     }
     

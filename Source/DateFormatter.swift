@@ -22,43 +22,17 @@
 import Foundation
 
 
-public struct X509AttributeValueType: DERCodable {
+extension DateFormatter {
     
-    // MARK: - Properties
-    public var oid   : OID
-    public var value : X509String
-    
-    // MARK: - Initializers
-    
-    public init(oid: OID, value: X509String)
+    convenience init(dateFormat: String, timeZone: TimeZone)
     {
-        self.oid   = oid
-        self.value = value
-    }
-    
-    public init(decoder: DERDecoder) throws
-    {
-        let sequence = try decoder.decoderFromSequence()
-        
-        oid   = try OID(decoder: sequence)
-        value = try X509String(decoder: sequence)
-        
-        try sequence.assertAtEnd()
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        let sequence = DEREncoder()
-        
-        sequence.encode(oid)
-        sequence.encode(value)
-        
-        return encoder.encodeSequence(bytes: sequence.bytes)
+        self.init()
+        self.dateFormat = dateFormat
+        self.timeZone   = timeZone
     }
     
 }
 
 
 // End of File
+

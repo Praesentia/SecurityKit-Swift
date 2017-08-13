@@ -35,34 +35,41 @@ import Foundation
 public protocol Credentials: class  {
     
     // MARK: - Properties
-    var identity : Identity?          { get }
-    var profile  : Any                { get } //: A JSON profile representing the public credentials.
-    var type     : CredentialsType    { get } //: Identifies the type of credentials.
-    var validity : ClosedRange<Date>? { get }
+    
+    /**
+     Identity
+     
+     The identity associated with the certificate.
+     */
+    var identity: Identity? { get }
+    
+    /**
+     A JSON profile representing the public credentials.
+     */
+    var profile: Any { get }
+    
+    /**
+     The credentials type
+     */
+    var type: CredentialsType { get }
+    
+    /**
+     Validity period.
+     
+     Specifies a closed time period for which the credentials are valid.
+     */
+    var validity: ClosedRange<Date>? { get }
+    
+    // MARK: - Signing
+    
+    func sign(bytes: [UInt8], using digestType: DigestType) -> [UInt8]?
+    
+    func verify(signature: [UInt8], for bytes: [UInt8], using digestType: DigestType) -> Bool
     
     // MARK: - Authentication
     
     func verifyTrust(completionHandler completion: @escaping (Error?) -> Void)
     
-    // MARK: - Signing
-    
-    /**
-     Sign bytes.
-     
-     - Parameters:
-        - bytes: The bytes being signed.  This will typically be a hash value
-            of the actual data.
-     */
-    func sign(bytes: [UInt8], padding digestType: DigestType) -> [UInt8]?
-    
-    /**
-     Verify signature
-     
-     - Parameters:
-        - bytes: The bytes that were originally signed.  This will typically be
-            a hash value of the actual data.
-     */
-    func verify(signature: [UInt8], padding digestType: DigestType, for bytes: [UInt8]) -> Bool
 }
 
 public extension Credentials {
@@ -73,7 +80,7 @@ public extension Credentials {
      - Parameters:
         - date: The time to be checked.
      */
-    func valid(for date: Date) -> Bool
+    public func valid(for date: Date) -> Bool
     {
         return validity?.contains(date) ?? false
     }

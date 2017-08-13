@@ -57,6 +57,12 @@ public protocol Digest: class {
 
 public extension Digest {
     
+    public func hash(bytes: [UInt8]) -> [UInt8]
+    {
+        update(bytes: bytes)
+        return final()
+    }
+    
     /**
      Update digest.
      

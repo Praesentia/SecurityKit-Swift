@@ -19,46 +19,24 @@
  */
 
 
-import Foundation
+import XCTest
+@testable import SecurityKit
 
 
-public struct X509AttributeValueType: DERCodable {
+class OIDTests: XCTestCase {
     
-    // MARK: - Properties
-    public var oid   : OID
-    public var value : X509String
-    
-    // MARK: - Initializers
-    
-    public init(oid: OID, value: X509String)
+    func testObjectIdentifier()
     {
-        self.oid   = oid
-        self.value = value
-    }
-    
-    public init(decoder: DERDecoder) throws
-    {
-        let sequence = try decoder.decoderFromSequence()
+        let encoder = DEREncoder()
+        let oid     = OID(components: [ 2, 5, 4, 3 ])
         
-        oid   = try OID(decoder: sequence)
-        value = try X509String(decoder: sequence)
+        encoder.encode(oid)
         
-        try sequence.assertAtEnd()
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        let sequence = DEREncoder()
-        
-        sequence.encode(oid)
-        sequence.encode(value)
-        
-        return encoder.encodeSequence(bytes: sequence.bytes)
+        XCTAssertEqual(encoder.bytes, [ 0x06, 0x03, 0x55, 0x04, 0x03 ])
     }
     
 }
 
 
 // End of File
+

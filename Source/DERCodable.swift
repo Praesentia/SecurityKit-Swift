@@ -22,40 +22,26 @@
 import Foundation
 
 
-public struct X509AttributeValueType: DERCodable {
+/**
+ DER Codable protocol.
+ */
+public protocol DERCodable {
     
-    // MARK: - Properties
-    public var oid   : OID
-    public var value : X509String
+    /**
+     Encode object.
+     
+     - Parameters:
+        - encoder: DER encoder.
+     */
+    func encode(encoder: DEREncoder)
     
-    // MARK: - Initializers
-    
-    public init(oid: OID, value: X509String)
-    {
-        self.oid   = oid
-        self.value = value
-    }
-    
-    public init(decoder: DERDecoder) throws
-    {
-        let sequence = try decoder.decoderFromSequence()
-        
-        oid   = try OID(decoder: sequence)
-        value = try X509String(decoder: sequence)
-        
-        try sequence.assertAtEnd()
-    }
-    
-    // MARK: - DERCodable
+}
+
+extension UInt: DERCodable {
     
     public func encode(encoder: DEREncoder)
     {
-        let sequence = DEREncoder()
-        
-        sequence.encode(oid)
-        sequence.encode(value)
-        
-        return encoder.encodeSequence(bytes: sequence.bytes)
+        encoder.encodeUnsignedInteger(self)
     }
     
 }

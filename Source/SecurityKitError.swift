@@ -29,8 +29,13 @@ import Foundation
  */
 public enum SecurityKitError: Int, Error, CustomStringConvertible, LocalizedError {
     case badCredentials =  1
-    case failed         =  2
-    case notFound       =  3
+    case badSignature   =  2
+    case decodingError  =  3
+    case failed         =  4 // General failure.
+    case invalidData    =  5
+    case notInitialized =  6
+    case notFound       =  7
+    case notPermitted   =  8
     
     public var description      : String  { return "SecurityKit error \( rawValue ) (\( localizedDescription ))" }
     public var errorDescription : String? { return SecurityKitError.localizedDescriptions[self] }
@@ -42,9 +47,14 @@ extension SecurityKitError {
      Localizable description of error codes.
      */
     static let localizedDescriptions: [SecurityKitError : String] = [
-        .badCredentials : NSLocalizedString("Bad credentials",       comment: "SecurityKit error description."),
+        .badCredentials : NSLocalizedString("Bad credentials.",      comment: "SecurityKit error description."),
+        .badSignature   : NSLocalizedString("Bad signature.",        comment: "SecurityKit error description."),
+        .decodingError  : NSLocalizedString("Decoding error.",       comment: "SecurityKit error description."),
         .failed         : NSLocalizedString("Failed",                comment: "SecurityKit error description."),
-        .notFound       : NSLocalizedString("Not found",             comment: "SecurityKit error description.")
+        .invalidData    : NSLocalizedString("Invalid data.",         comment: "SecurityKit error description."),
+        .notInitialized : NSLocalizedString("Not initialized.",      comment: "SecurityKit error description."),
+        .notFound       : NSLocalizedString("Not found",             comment: "SecurityKit error description."),
+        .notPermitted   : NSLocalizedString("Not permitted",         comment: "SecurityKit error description.")
     ]
     
 }

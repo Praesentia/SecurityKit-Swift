@@ -19,51 +19,28 @@
  */
 
 
-import Foundation
+import XCTest
+@testable import SecurityKit
 
 
-/**
- X509 PublicKey
- */
-public struct X509PublicKey: DERCodable {
+class DERDecoderTests: XCTestCase {
     
-    // MARK: - Properties
-    public var bytes : [UInt8]
-    public var data  : Data { return Data(bytes) }
-    
-    // MARK: - Initializers
-    
-    public init(bytes: [UInt8])
+    func testSequence()
     {
-        self.bytes = bytes
-    }
-    
-    public init(data: Data)
-    {
-        self.init(bytes: [UInt8](data))
-    }
-    
-    /**
-     Initialize instance from decoder.
-     
-     - Requirement: RFC 5280
-     */
-    public init(decoder: DERDecoder) throws
-    {
-        let bytes = try decoder.decodeBitString()
+        let decoder = DERDecoder(bytes: [ 0x30, 0x03, 0x01, 0x02, 0x03 ])
         
-        self.init(bytes: bytes)
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        encoder.encodeBitString(bytes: [UInt8](data))
+        do {
+            let bytes = try decoder.decodeSequence()
+            try decoder.assertAtEnd()
+            
+            XCTAssertEqual(bytes, [ 1, 2, 3 ])
+        }
+        catch {
+            XCTFail()
+        }
     }
     
 }
 
 
 // End of File
-

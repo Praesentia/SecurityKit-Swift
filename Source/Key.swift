@@ -26,7 +26,8 @@ import Foundation
  */
 public protocol Key: class {
     
-    var blockSize : Int { get }
+    var blockSize : Int  { get }
+    var keySize   : UInt { get }
     
     /**
      Sign bytes for identity.
@@ -35,25 +36,16 @@ public protocol Key: class {
      associated with identity.
      
      - Parameters:
-        - bytes: The byte sequence to be signed.
+         - bytes: The byte sequence to be signed.
      
      - Returns:
-        Returns the signature as a sequence a bytes, or nil if the required
-        credentials for identity do not exist.
+         Returns the signature as a sequence a bytes, or nil if the required
+         credentials for identity do not exist.
      
      - Remark:
-        The bytes to be signed are often a hash
+         The bytes to be signed are often a hash
      */
-    func sign(bytes: [UInt8], padding: DigestType) -> [UInt8]
-    
-    /**
-     Verify signature for identity.
-     
-     - Parameters:
-        - signature: The signature to be verified.
-        - bytes:     The byte sequence to be verified.
-     */
-    func verify(signature: [UInt8], padding: DigestType, for bytes: [UInt8]) -> Bool
+    func sign(bytes: [UInt8], using digestType: DigestType) -> [UInt8]
     
     /**
      Verify signature for identity.
@@ -62,20 +54,7 @@ public protocol Key: class {
         - signature: The signature to be verified.
         - data:      The byte sequence to be verified.
      */
-    func verify(signature: [UInt8], using digestType: DigestType, for data: Data) -> Bool
-}
-
-extension Key {
-    
-    func sign(bytes: [UInt8], using digestType: DigestType) -> [UInt8]
-    {
-        let digest = SecurityManagerShared.main.digest(using: digestType)
-        
-        digest.update(bytes: bytes)
-        
-        return sign(bytes: digest.final(), padding: digestType)
-    }
-    
+    func verify(signature: [UInt8], for bytes: [UInt8], using digestType: DigestType) -> Bool
 }
 
 

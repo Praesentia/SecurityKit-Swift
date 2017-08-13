@@ -22,7 +22,7 @@
 import Foundation
 
 
-public struct X509Algorithm {
+public struct X509Algorithm: DERCodable {
     
     // MARK: - Class Properties
     public static let rsaEncryption           = X509Algorithm(oid: pkcs1RSAEncryption)
@@ -62,6 +62,28 @@ public struct X509Algorithm {
     {
         self.oid        = oid
         self.parameters = parameters
+    }
+    
+    public init(decoder: DERDecoder) throws
+    {
+        let sequence   = try decoder.decoderFromSequence()
+        let oid        = try OID(decoder: sequence)
+        let parameters = try sequence.decodeNull()
+        try sequence.assertAtEnd()
+        
+        self.init(oid: oid, parameters: parameters)
+    }
+    
+    // MARK: - DERCodable
+    
+    public func encode(encoder: DEREncoder)
+    {
+        let sequence = DEREncoder()
+        
+        sequence.encode(oid)
+        sequence.encodeNull()
+        
+        encoder.encodeSequence(bytes: sequence.bytes)
     }
     
 }

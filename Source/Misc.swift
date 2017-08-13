@@ -22,46 +22,21 @@
 import Foundation
 
 
-/**
- X509 PublicKey
- */
-public struct X509PublicKey: DERCodable {
-    
-    // MARK: - Properties
-    public var bytes : [UInt8]
-    public var data  : Data { return Data(bytes) }
-    
-    // MARK: - Initializers
-    
-    public init(bytes: [UInt8])
-    {
-        self.bytes = bytes
+func +=(lhs: inout [UInt8], rhs: UInt8)
+{
+    lhs.append(rhs)
+}
+
+func +=(lhs: inout [UInt8], rhs: [UInt8])
+{
+    lhs.append(contentsOf: rhs)
+}
+
+func +=(lhs: inout [UInt8], rhs: [UInt8]?)
+{
+    if rhs != nil {
+        lhs.append(contentsOf: rhs!)
     }
-    
-    public init(data: Data)
-    {
-        self.init(bytes: [UInt8](data))
-    }
-    
-    /**
-     Initialize instance from decoder.
-     
-     - Requirement: RFC 5280
-     */
-    public init(decoder: DERDecoder) throws
-    {
-        let bytes = try decoder.decodeBitString()
-        
-        self.init(bytes: bytes)
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        encoder.encodeBitString(bytes: [UInt8](data))
-    }
-    
 }
 
 

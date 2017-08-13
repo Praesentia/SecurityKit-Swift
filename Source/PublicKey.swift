@@ -22,41 +22,16 @@
 import Foundation
 
 
-public struct X509AttributeValueType: DERCodable {
+/**
+ Public Key protocol
+ */
+public protocol PublicKey: Key {
     
     // MARK: - Properties
-    public var oid   : OID
-    public var value : X509String
+    var algorithm : X509Algorithm { get }
+    var data      : Data          { get }
     
-    // MARK: - Initializers
-    
-    public init(oid: OID, value: X509String)
-    {
-        self.oid   = oid
-        self.value = value
-    }
-    
-    public init(decoder: DERDecoder) throws
-    {
-        let sequence = try decoder.decoderFromSequence()
-        
-        oid   = try OID(decoder: sequence)
-        value = try X509String(decoder: sequence)
-        
-        try sequence.assertAtEnd()
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        let sequence = DEREncoder()
-        
-        sequence.encode(oid)
-        sequence.encode(value)
-        
-        return encoder.encodeSequence(bytes: sequence.bytes)
-    }
+    func fingerprint(using digestType: DigestType) -> [UInt8]
     
 }
 

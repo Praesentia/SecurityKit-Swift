@@ -27,11 +27,11 @@ import Foundation
  
  - Requirement: RFC-5280
  */
-public struct X509BasicConstraints {
+public struct X509BasicConstraints: DERCodable {
     
     // MARK: - Properties
-    public var cA    : Bool
-    public var depth : [UInt8]? = nil
+    public var ca                : Bool
+    public var pathLenConstraint : UInt? = nil
     
     // MARK: - Initializers
     
@@ -40,7 +40,60 @@ public struct X509BasicConstraints {
      */
     public init()
     {
-        cA = false
+        ca = false
+    }
+    
+    /**
+     Initialize instance.
+     */
+    public init(ca: Bool)
+    {
+        self.ca = ca
+    }
+    
+    /**
+     Initialize instance from extension.
+     */
+    public init(decoder: DERDecoder) throws
+    {
+        let sequence = try decoder.decoderFromSequence()
+        
+        if sequence.peekTag(with: DERCoder.TagBoolean) {
+            ca = try sequence.decodeBoolean()
+        }
+        else {
+            ca = false
+        }
+        
+        if sequence.peekTag(with: DERCoder.TagInteger) {
+            pathLenConstraint = try sequence.decodeUnsignedIntegerAsValue()
+        }
+        
+        try decoder.assertAtEnd()
+    }
+    
+    /**
+     Initialize instance from extension.
+     */
+    public init(from extn: X509Extension) throws
+    {
+        let decoder = DERDecoder(bytes: extn.extnValue)
+        try self.init(decoder: decoder)
+        try decoder.assertAtEnd()
+    }
+    
+    // MARK: - DERCodable
+    
+    public func encode(encoder: DEREncoder)
+    {
+        let sequence = DEREncoder()
+        
+        sequence.encodeBoolean(ca)
+        if let pathLenConstraint = self.pathLenConstraint {
+            sequence.encodeUnsignedInteger(pathLenConstraint)
+        }
+        
+        encoder.encodeSequence(bytes: sequence.bytes)
     }
     
 }

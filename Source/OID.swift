@@ -25,7 +25,7 @@ import Foundation
 /**
  ASN.1 Object Identifier
  */
-public struct OID: Equatable, Hashable {
+public struct OID: Equatable, Hashable, DERCodable {
     
     // MARK: - Properties
     
@@ -68,6 +68,63 @@ public struct OID: Equatable, Hashable {
     public init(prefix: OID, components: [UInt])
     {
         self.components = prefix.components + components
+    }
+    
+    public init(decoder: DERDecoder) throws
+    {
+        let bytes = try decoder.decode(with: DERCoder.TagObjectIdentifier)
+        try decoder.assert(bytes.count > 0)
+        
+        var oid      = [UInt]()
+        let oid0     = bytes[0] / 40
+        let oid1     = bytes[0] - (oid0 * 40)
+        var index    : Int  = 1
+        var component: UInt = 0
+        
+        oid.append(UInt(oid0))
+        oid.append(UInt(oid1))
+        
+        while index < bytes.count { // TODO: error check
+            let byte = bytes[index]
+            
+            if byte < 0x80 {
+                component = (component << 7) | UInt(byte)
+                oid.append(component)
+                component = 0
+            }
+            else {
+                component = (component << 7) | UInt(byte & 0x7f)
+            }
+            
+            index += 1
+        }
+        
+        self.init(components: oid)
+    }
+    
+    // MARK: - DERCodable
+    
+    public func encode(encoder: DEREncoder)
+    {
+        var value = [UInt8]()
+        
+        value += [UInt8(40 * components[0] + components[1])]
+        
+        for i in 2..<components.count {
+            var component = components[i]
+            var fragment  = [UInt8]()
+            
+            fragment.append(UInt8(component & 0x7f))
+            
+            while component >= 0x80 {
+                component = component >> 7
+                fragment.append(UInt8(component & 0x7f | 0x80))
+            }
+            
+            value += fragment.reversed()
+        }
+        
+        encoder.encodeTag(tag: DERCoder.TagObjectIdentifier, bytes: value)
     }
     
     // MARK: - Equatable

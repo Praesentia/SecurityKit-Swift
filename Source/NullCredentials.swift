@@ -63,7 +63,7 @@ public class NullCredentials: Credentials {
         - bytes: The bytes being signed.  This will typically be a hash value
                  of the actual data.
      */
-    public func sign(bytes: [UInt8], padding digestType: DigestType) -> [UInt8]?
+    public func sign(bytes: [UInt8], using digestType: DigestType) -> [UInt8]?
     {
         return nil
     }
@@ -77,7 +77,7 @@ public class NullCredentials: Credentials {
         - bytes: The bytes that were originally signed.  This will typically be
                 a hash value of the actual data.
      */
-    public func verify(signature: [UInt8], padding digestType: DigestType, for bytes: [UInt8]) -> Bool
+    public func verify(signature: [UInt8], for bytes: [UInt8], using digestType: DigestType) -> Bool
     {
         return false
     }

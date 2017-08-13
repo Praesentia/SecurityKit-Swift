@@ -19,46 +19,27 @@
  */
 
 
-import Foundation
+import XCTest
 
 
-public struct X509AttributeValueType: DERCodable {
+class TestsBundle {
     
-    // MARK: - Properties
-    public var oid   : OID
-    public var value : X509String
+}
+
+extension Bundle {
     
-    // MARK: - Initializers
+    static let tests = Bundle(for: TestsBundle.self)
     
-    public init(oid: OID, value: X509String)
+    func url(forResource resource: String, ofType type: String) -> URL?
     {
-        self.oid   = oid
-        self.value = value
-    }
-    
-    public init(decoder: DERDecoder) throws
-    {
-        let sequence = try decoder.decoderFromSequence()
-        
-        oid   = try OID(decoder: sequence)
-        value = try X509String(decoder: sequence)
-        
-        try sequence.assertAtEnd()
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        let sequence = DEREncoder()
-        
-        sequence.encode(oid)
-        sequence.encode(value)
-        
-        return encoder.encodeSequence(bytes: sequence.bytes)
+        if let path = path(forResource: resource, ofType: type) {
+            return URL(fileURLWithPath: path)
+        }
+        return nil
     }
     
 }
 
 
 // End of File
+

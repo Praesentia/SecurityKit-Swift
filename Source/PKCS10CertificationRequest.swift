@@ -22,30 +22,39 @@
 import Foundation
 
 
-public struct X509Certificate: DERCodable {
+/**
+ PKCS10 Certification request.
+ 
+ - Requirements:
+     RFC 2986, PKCS #10: Certification Request Syntax Specification Version 1.7
+ */
+public struct PCKS10CertificationRequest: DERCodable {
     
-    // MARK: - Protected
-    public var tbsCertificate : X509TBSCertificate
-    public var algorithm      : X509Algorithm
-    public var signature      : [UInt8]
-    public var bytes          : [UInt8] { return encode() }
-    public var data           : Data    { return Data(bytes) }
-    public var fingerprint    : [UInt8] { return fingerprint(using: .sha1) }
+    // MARK: - Properties
+    public var certificationRequestInfo: PCKS10CertificationRequestInfo
+    public var signatureAlgorithm      : X509Algorithm
+    public var signature               : [UInt8]
+    public var bytes                   : [UInt8] { return encode() }
     
     // MARK: - Initializers
     
-    public init(tbsCertificate: X509TBSCertificate, algorithm: X509Algorithm, signature: [UInt8])
+    public init(certificationRequestInfo: PCKS10CertificationRequestInfo, signatureAlgorithm: X509Algorithm, signature: [UInt8])
     {
-        self.tbsCertificate = tbsCertificate
-        self.algorithm      = algorithm
-        self.signature      = signature
+        self.certificationRequestInfo = certificationRequestInfo
+        self.signatureAlgorithm       = signatureAlgorithm
+        self.signature                = signature
     }
-
+    
+    /**
+     Initialize from data.
+     
+     - Parameters:
+         - data: PKCS #10 formatted certification request.
+     */
     public init?(from data: Data)
     {
         do {
             let decoder = DERDecoder(data: data)
-            
             try self.init(decoder: decoder)
             try decoder.assertAtEnd()
         }
@@ -54,22 +63,19 @@ public struct X509Certificate: DERCodable {
         }
     }
     
+    /**
+     Decode certifcation request.
+     
+     */
     public init(decoder: DERDecoder) throws
     {
-        let sequence = try decoder.decoderFromSequence()
-        
-        tbsCertificate = try X509TBSCertificate(decoder: sequence)
-        algorithm      = try X509Algorithm(decoder: sequence)
-        signature      = try sequence.decodeBitString()
+        let sequence                 = try decoder.decoderFromSequence()
+        let certificationRequestInfo = try PCKS10CertificationRequestInfo(decoder: sequence)
+        let signatureAlgorithm       = try X509Algorithm(decoder: sequence)
+        let signature                = try sequence.decodeBitString()
         try sequence.assertAtEnd()
-    }
-    
-    // MARK: - Fingerprint
-    
-    public func fingerprint(using digestType: DigestType) -> [UInt8]
-    {
-        let digest = SecurityManagerShared.main.digest(ofType: digestType)
-        return digest.hash(bytes: bytes)
+        
+        self.init(certificationRequestInfo: certificationRequestInfo, signatureAlgorithm: signatureAlgorithm, signature: signature)
     }
     
     // MARK: - DERCodable
@@ -78,8 +84,8 @@ public struct X509Certificate: DERCodable {
     {
         let sequence = DEREncoder()
         
-        sequence.encode(tbsCertificate)
-        sequence.encode(algorithm)
+        sequence.encode(certificationRequestInfo)
+        sequence.encode(signatureAlgorithm)
         sequence.encodeBitString(bytes: signature)
         
         encoder.encodeSequence(bytes: sequence.bytes)
@@ -90,7 +96,6 @@ public struct X509Certificate: DERCodable {
         let encoder = DEREncoder()
         
         encoder.encode(self)
-        
         return encoder.bytes
     }
     

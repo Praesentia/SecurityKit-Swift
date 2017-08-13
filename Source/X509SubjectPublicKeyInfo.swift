@@ -22,7 +22,7 @@
 import Foundation
 
 
-public struct X509SubjectPublicKeyInfo {
+public struct X509SubjectPublicKeyInfo: DERCodable {
     
     // MARK: - Properties
     public var algorithm        : X509Algorithm
@@ -34,6 +34,28 @@ public struct X509SubjectPublicKeyInfo {
     {
         self.algorithm        = algorithm
         self.subjectPublicKey = subjectPublicKey
+    }
+
+    public init(decoder: DERDecoder) throws
+    {
+        let sequence = try decoder.decoderFromSequence()
+        
+        algorithm        = try X509Algorithm(decoder: sequence)
+        subjectPublicKey = try X509PublicKey(decoder: sequence)
+        
+        try sequence.assertAtEnd()
+    }
+    
+    // MARK: - DERCodable
+    
+    public func encode(encoder: DEREncoder)
+    {
+        let sequence = DEREncoder()
+
+        sequence.encode(algorithm)
+        sequence.encode(subjectPublicKey)
+        
+        encoder.encodeSequence(bytes: sequence.bytes)
     }
     
 }

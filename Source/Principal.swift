@@ -60,7 +60,7 @@ public class Principal {
                         principal = Principal(identity: identity, credentials: credentials, authorization: authorization)
                     }
                     else {
-                        NSLog("Credentials for \"%s\" are not trusted.", identity.string)
+                        NSLog("Credentials for \"\(identity.string)\" are not trusted.")
                     }
                     sync.decr(error)
                 }
