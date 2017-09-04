@@ -26,8 +26,10 @@ import Foundation
  */
 public protocol Key: class {
     
-    var blockSize : Int  { get }
-    var keySize   : UInt { get }
+    // MARK: - Properties
+    var keySize: UInt { get }
+    
+    // MARK: - Signing
     
     /**
      Sign bytes for identity.

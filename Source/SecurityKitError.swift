@@ -36,8 +36,9 @@ public enum SecurityKitError: Int, Error, CustomStringConvertible, LocalizedErro
     case notInitialized =  6
     case notFound       =  7
     case notPermitted   =  8
+    case notSupported   =  9
     
-    public var description      : String  { return "SecurityKit error \( rawValue ) (\( localizedDescription ))" }
+    public var description      : String  { return "SecurityKitError Code=\( rawValue ) \"(\( localizedDescription ))\"" }
     public var errorDescription : String? { return SecurityKitError.localizedDescriptions[self] }
 }
 
@@ -54,7 +55,8 @@ extension SecurityKitError {
         .invalidData    : NSLocalizedString("Invalid data.",         comment: "SecurityKit error description."),
         .notInitialized : NSLocalizedString("Not initialized.",      comment: "SecurityKit error description."),
         .notFound       : NSLocalizedString("Not found",             comment: "SecurityKit error description."),
-        .notPermitted   : NSLocalizedString("Not permitted",         comment: "SecurityKit error description.")
+        .notPermitted   : NSLocalizedString("Not permitted",         comment: "SecurityKit error description."),
+        .notSupported   : NSLocalizedString("Not supported",         comment: "SecurityKit error description.")
     ]
     
 }
