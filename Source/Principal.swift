@@ -41,7 +41,9 @@ public class Principal {
     public var profile       : Any { return getProfile() }
     
     // MARK: - Class Initializers
-    
+
+    /** Instantiate from profile.
+     */
     public static func instantiate(from profile: Any, completionHandler completion: @escaping (Principal?, Error?) -> Void)
     {
         let profile       = profile as! [String : Any]

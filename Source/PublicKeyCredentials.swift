@@ -1,6 +1,6 @@
 /*
  -----------------------------------------------------------------------------
- This source file is part of MedKitSecurity.
+ This source file is part of SecurityKitAOS.
  
  Copyright 2017 Jon Griffeth
  
@@ -23,7 +23,7 @@ import Foundation
 
 
 /**
- Public Key credentials protocol.
+ Public Key Credentials protocol.
  */
 public protocol PublicKeyCredentials: Credentials {
     
@@ -32,6 +32,15 @@ public protocol PublicKeyCredentials: Credentials {
     var chain       : [Certificate] { get }
     
     func certifyRequest(_ certificationRequest: PCKS10CertificationRequest, completionHandler completion: @escaping (X509Certificate?, Error?) -> Void)
+    
+}
+
+public extension PublicKeyCredentials {
+
+    public var identity   : Identity?          { return certificate.identity   }
+    public var publicKey  : PublicKey          { return certificate.publicKey  }
+    public var privateKey : PrivateKey?        { return certificate.privateKey }
+    public var validity   : ClosedRange<Date>? { return certificate.validity   }
     
 }
 

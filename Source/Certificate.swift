@@ -50,7 +50,6 @@ public protocol Certificate: class {
      The public key associate with the certificate.
      */
     var publicKey : PublicKey   { get }
-    var privateKey: PrivateKey? { get }
     
     /**
      Validity period.
@@ -84,6 +83,8 @@ public protocol Certificate: class {
 }
 
 public extension Certificate {
+
+    var privateKey: PrivateKey? { return publicKey.privateKey }
     
     /**
      Are credentials valid for date.

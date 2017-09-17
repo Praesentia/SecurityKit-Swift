@@ -1,15 +1,15 @@
 /*
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
- 
- Copyright 2017 Jon Griffeth
- 
+
+ Copyright 2016-2017 Jon Griffeth
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,27 +19,32 @@
  */
 
 
-import XCTest
+import Foundation
 
 
-class TestsBundle {
-    
+public enum SymmetricEncryptionAlgorithm {
+    case aes128
+    case aes192
+    case aes256
 }
 
-extension Bundle {
-    
-    static let tests = Bundle(for: TestsBundle.self)
-    
-    func url(forResource resource: String, ofType type: String) -> URL?
-    {
-        var url: URL?
+public extension SymmetricEncryptionAlgorithm {
 
-        if let path = path(forResource: resource, ofType: type) {
-            url = URL(fileURLWithPath: path)
+    var keySize: UInt { return getKeySize() }
+
+    private func getKeySize() -> UInt
+    {
+        switch (self) {
+        case .aes128 :
+            return 128
+
+        case .aes192 :
+            return 192
+
+        case .aes256 :
+            return 256
         }
-        return url
     }
-    
 }
 
 

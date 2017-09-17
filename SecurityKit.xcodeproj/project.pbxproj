@@ -141,6 +141,10 @@
 		22C66D881F3724B200C617A8 /* PrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C66D861F3724B200C617A8 /* PrivateKey.swift */; };
 		22C66D891F3724B700C617A8 /* PrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C66D861F3724B200C617A8 /* PrivateKey.swift */; };
 		22C66D8A1F3724B700C617A8 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C66D851F3724B200C617A8 /* PublicKey.swift */; };
+		22C6E3741F69403F00671A26 /* TLS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C6E3731F69403F00671A26 /* TLS.swift */; };
+		22C6E3751F69403F00671A26 /* TLS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C6E3731F69403F00671A26 /* TLS.swift */; };
+		22C6E3771F6942CC00671A26 /* TLSDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C6E3761F6942CC00671A26 /* TLSDelegate.swift */; };
+		22C6E3781F6942CC00671A26 /* TLSDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C6E3761F6942CC00671A26 /* TLSDelegate.swift */; };
 		22D2B6671F3E1B7C00D66B18 /* PKCS10Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D2B6661F3E1B7C00D66B18 /* PKCS10Attribute.swift */; };
 		22D2B6681F3E1B7C00D66B18 /* PKCS10Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D2B6661F3E1B7C00D66B18 /* PKCS10Attribute.swift */; };
 		22D94A411F29FDC9007ECF5F /* DERCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D94A3D1F29FDC9007ECF5F /* DERCoder.swift */; };
@@ -151,6 +155,20 @@
 		22D94A461F29FE34007ECF5F /* DERCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D94A3D1F29FDC9007ECF5F /* DERCoder.swift */; };
 		22D94A471F29FE34007ECF5F /* DERDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D94A3F1F29FDC9007ECF5F /* DERDecoder.swift */; };
 		22D94A481F29FE34007ECF5F /* DEREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22D94A401F29FDC9007ECF5F /* DEREncoder.swift */; };
+		22F36E791F6D455F0002A61B /* TLSDataStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F36E781F6D455F0002A61B /* TLSDataStream.swift */; };
+		22F36E7A1F6D455F0002A61B /* TLSDataStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F36E781F6D455F0002A61B /* TLSDataStream.swift */; };
+		22F36E821F6D56BF0002A61B /* TLSFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F36E811F6D56BF0002A61B /* TLSFactory.swift */; };
+		22F36E831F6D56BF0002A61B /* TLSFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F36E811F6D56BF0002A61B /* TLSFactory.swift */; };
+		22F36E851F6D570E0002A61B /* TLSFactoryShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F36E841F6D570E0002A61B /* TLSFactoryShared.swift */; };
+		22F36E861F6D570E0002A61B /* TLSFactoryShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F36E841F6D570E0002A61B /* TLSFactoryShared.swift */; };
+		22FF29D51F5DD17E00E0FE8A /* SharedSecretKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FF29D41F5DD17E00E0FE8A /* SharedSecretKey.swift */; };
+		22FF29D61F5DD17E00E0FE8A /* SharedSecretKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FF29D41F5DD17E00E0FE8A /* SharedSecretKey.swift */; };
+		22FF29E21F5DD5E200E0FE8A /* SharedSecretCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FF29E11F5DD5E100E0FE8A /* SharedSecretCredentials.swift */; };
+		22FF29E31F5DD5E200E0FE8A /* SharedSecretCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FF29E11F5DD5E100E0FE8A /* SharedSecretCredentials.swift */; };
+		22FF29E51F5DD5F000E0FE8A /* SymmeticEncryptionAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FF29E41F5DD5F000E0FE8A /* SymmeticEncryptionAlgorithm.swift */; };
+		22FF29E61F5DD5F000E0FE8A /* SymmeticEncryptionAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FF29E41F5DD5F000E0FE8A /* SymmeticEncryptionAlgorithm.swift */; };
+		22FF29E81F5DDDD400E0FE8A /* PublicKeyEncryptionAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FF29E71F5DDDD400E0FE8A /* PublicKeyEncryptionAlgorithm.swift */; };
+		22FF29E91F5DDDD400E0FE8A /* PublicKeyEncryptionAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FF29E71F5DDDD400E0FE8A /* PublicKeyEncryptionAlgorithm.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -250,11 +268,20 @@
 		22B48D241F2A02CF00539BAE /* Misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Misc.swift; path = Source/Misc.swift; sourceTree = "<group>"; };
 		22C66D851F3724B200C617A8 /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PublicKey.swift; path = Source/PublicKey.swift; sourceTree = "<group>"; };
 		22C66D861F3724B200C617A8 /* PrivateKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PrivateKey.swift; path = Source/PrivateKey.swift; sourceTree = "<group>"; };
+		22C6E3731F69403F00671A26 /* TLS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TLS.swift; path = Source/TLS.swift; sourceTree = "<group>"; };
+		22C6E3761F6942CC00671A26 /* TLSDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TLSDelegate.swift; path = Source/TLSDelegate.swift; sourceTree = "<group>"; };
 		22D2B6661F3E1B7C00D66B18 /* PKCS10Attribute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PKCS10Attribute.swift; path = Source/PKCS10Attribute.swift; sourceTree = "<group>"; };
 		22D94A3D1F29FDC9007ECF5F /* DERCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DERCoder.swift; path = Source/DERCoder.swift; sourceTree = "<group>"; };
 		22D94A3E1F29FDC9007ECF5F /* DERCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DERCodable.swift; path = Source/DERCodable.swift; sourceTree = "<group>"; };
 		22D94A3F1F29FDC9007ECF5F /* DERDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DERDecoder.swift; path = Source/DERDecoder.swift; sourceTree = "<group>"; };
 		22D94A401F29FDC9007ECF5F /* DEREncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DEREncoder.swift; path = Source/DEREncoder.swift; sourceTree = "<group>"; };
+		22F36E781F6D455F0002A61B /* TLSDataStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TLSDataStream.swift; path = Source/TLSDataStream.swift; sourceTree = "<group>"; };
+		22F36E811F6D56BF0002A61B /* TLSFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TLSFactory.swift; path = Source/TLSFactory.swift; sourceTree = "<group>"; };
+		22F36E841F6D570E0002A61B /* TLSFactoryShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TLSFactoryShared.swift; path = Source/TLSFactoryShared.swift; sourceTree = "<group>"; };
+		22FF29D41F5DD17E00E0FE8A /* SharedSecretKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SharedSecretKey.swift; path = Source/SharedSecretKey.swift; sourceTree = "<group>"; };
+		22FF29E11F5DD5E100E0FE8A /* SharedSecretCredentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SharedSecretCredentials.swift; path = Source/SharedSecretCredentials.swift; sourceTree = "<group>"; };
+		22FF29E41F5DD5F000E0FE8A /* SymmeticEncryptionAlgorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SymmeticEncryptionAlgorithm.swift; path = Source/SymmeticEncryptionAlgorithm.swift; sourceTree = "<group>"; };
+		22FF29E71F5DDDD400E0FE8A /* PublicKeyEncryptionAlgorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PublicKeyEncryptionAlgorithm.swift; path = Source/PublicKeyEncryptionAlgorithm.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -411,6 +438,7 @@
 				2271DDCB1F13970000494AB6 /* Manager */,
 				222C1C811F2F48480074DFD5 /* PKCS */,
 				2271DDC21F1395C200494AB6 /* Principal */,
+				22C6E3721F693FFF00671A26 /* TLS */,
 				2271DDC91F1396B800494AB6 /* X509 */,
 				2271DDDA1F13999F00494AB6 /* Tools */,
 				22B48D231F2A01C200539BAE /* Extensions */,
@@ -469,9 +497,12 @@
 		2271DDBF1F1395A000494AB6 /* Keys */ = {
 			isa = PBXGroup;
 			children = (
+				2271DDBD1F13958700494AB6 /* Key.swift */,
 				22C66D861F3724B200C617A8 /* PrivateKey.swift */,
 				22C66D851F3724B200C617A8 /* PublicKey.swift */,
-				2271DDBD1F13958700494AB6 /* Key.swift */,
+				22FF29D41F5DD17E00E0FE8A /* SharedSecretKey.swift */,
+				22FF29E41F5DD5F000E0FE8A /* SymmeticEncryptionAlgorithm.swift */,
+				22FF29E71F5DDDD400E0FE8A /* PublicKeyEncryptionAlgorithm.swift */,
 			);
 			name = Keys;
 			sourceTree = "<group>";
@@ -501,6 +532,7 @@
 				2271DD251F13945700494AB6 /* CredentialsType.swift */,
 				2271DD271F13945700494AB6 /* NullCredentials.swift */,
 				2273D9C91F24BDFC00AECF12 /* PublicKeyCredentials.swift */,
+				22FF29E11F5DD5E100E0FE8A /* SharedSecretCredentials.swift */,
 			);
 			name = Credentials;
 			sourceTree = "<group>";
@@ -615,6 +647,18 @@
 				22B48D241F2A02CF00539BAE /* Misc.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		22C6E3721F693FFF00671A26 /* TLS */ = {
+			isa = PBXGroup;
+			children = (
+				22C6E3731F69403F00671A26 /* TLS.swift */,
+				22F36E781F6D455F0002A61B /* TLSDataStream.swift */,
+				22C6E3761F6942CC00671A26 /* TLSDelegate.swift */,
+				22F36E811F6D56BF0002A61B /* TLSFactory.swift */,
+				22F36E841F6D570E0002A61B /* TLSFactoryShared.swift */,
+			);
+			name = TLS;
 			sourceTree = "<group>";
 		};
 		22D94A3C1F29FDB8007ECF5F /* ASN.1 */ = {
@@ -816,21 +860,28 @@
 				2271DD6C1F13952600494AB6 /* X509ExtendedKeyUsage.swift in Sources */,
 				2271DDDD1F139A6E00494AB6 /* Keys.swift in Sources */,
 				22B48D211F2A01AC00539BAE /* DateFormatter.swift in Sources */,
+				22F36E821F6D56BF0002A61B /* TLSFactory.swift in Sources */,
 				22B48D251F2A02CF00539BAE /* Misc.swift in Sources */,
 				2271DD6E1F13952600494AB6 /* X509KeyUsage.swift in Sources */,
 				2271DD6B1F13952600494AB6 /* X509Constants.swift in Sources */,
 				22D94A421F29FDC9007ECF5F /* DERCodable.swift in Sources */,
 				2271DD691F13952600494AB6 /* X509BasicConstraints.swift in Sources */,
+				22FF29E81F5DDDD400E0FE8A /* PublicKeyEncryptionAlgorithm.swift in Sources */,
 				2271DD5A1F13952600494AB6 /* CredentialsType.swift in Sources */,
 				22967B691F2398C20000A3AB /* CredentialsManagerDevice.swift in Sources */,
 				2271DD601F13952600494AB6 /* NullCredentials.swift in Sources */,
+				22F36E791F6D455F0002A61B /* TLSDataStream.swift in Sources */,
+				22FF29E21F5DD5E200E0FE8A /* SharedSecretCredentials.swift in Sources */,
 				2271DD651F13952600494AB6 /* SecurityManager.swift in Sources */,
 				2271DD551F13952600494AB6 /* AuthorizationFactory.swift in Sources */,
 				2271DD701F13952600494AB6 /* X509PublicKey.swift in Sources */,
+				22C6E3771F6942CC00671A26 /* TLSDelegate.swift in Sources */,
+				22F36E851F6D570E0002A61B /* TLSFactoryShared.swift in Sources */,
 				2271DD681F13952600494AB6 /* X509AttributeValueType.swift in Sources */,
 				22C66D871F3724B200C617A8 /* PublicKey.swift in Sources */,
 				22D2B6671F3E1B7C00D66B18 /* PKCS10Attribute.swift in Sources */,
 				2271DD531F13952600494AB6 /* ACL.swift in Sources */,
+				22FF29D51F5DD17E00E0FE8A /* SharedSecretKey.swift in Sources */,
 				2271DD6F1F13952600494AB6 /* X509Name.swift in Sources */,
 				2273D9F01F24E86300AECF12 /* CredentialsManagerDelegate.swift in Sources */,
 				2271DD561F13952600494AB6 /* AuthorizationFactoryDB.swift in Sources */,
@@ -846,6 +897,7 @@
 				2271DD5E1F13952600494AB6 /* Identity.swift in Sources */,
 				2271DD721F13952600494AB6 /* X509SubjectPublicKeyInfo.swift in Sources */,
 				2271DD661F13952600494AB6 /* SecurityManagerShared.swift in Sources */,
+				22FF29E51F5DD5F000E0FE8A /* SymmeticEncryptionAlgorithm.swift in Sources */,
 				2271DD6D1F13952600494AB6 /* X509Extension.swift in Sources */,
 				22D94A441F29FDC9007ECF5F /* DEREncoder.swift in Sources */,
 				22D94A431F29FDC9007ECF5F /* DERDecoder.swift in Sources */,
@@ -870,6 +922,7 @@
 				2273D9CA1F24BDFC00AECF12 /* PublicKeyCredentials.swift in Sources */,
 				2271DD5B1F13952600494AB6 /* Digest.swift in Sources */,
 				22C66D881F3724B200C617A8 /* PrivateKey.swift in Sources */,
+				22C6E3741F69403F00671A26 /* TLS.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -897,21 +950,28 @@
 				2271DDB21F13952800494AB6 /* X509ExtendedKeyUsage.swift in Sources */,
 				2271DDDE1F139A7100494AB6 /* Keys.swift in Sources */,
 				22B48D221F2A01AC00539BAE /* DateFormatter.swift in Sources */,
+				22F36E831F6D56BF0002A61B /* TLSFactory.swift in Sources */,
 				22B48D261F2A02CF00539BAE /* Misc.swift in Sources */,
 				2271DDB41F13952800494AB6 /* X509KeyUsage.swift in Sources */,
 				2271DDB11F13952800494AB6 /* X509Constants.swift in Sources */,
 				2271DDAF1F13952800494AB6 /* X509BasicConstraints.swift in Sources */,
 				2271DDA01F13952800494AB6 /* CredentialsType.swift in Sources */,
+				22FF29E91F5DDDD400E0FE8A /* PublicKeyEncryptionAlgorithm.swift in Sources */,
 				22967B6A1F2398C20000A3AB /* CredentialsManagerDevice.swift in Sources */,
 				2271DDA61F13952800494AB6 /* NullCredentials.swift in Sources */,
 				2271DDAB1F13952800494AB6 /* SecurityManager.swift in Sources */,
+				22F36E7A1F6D455F0002A61B /* TLSDataStream.swift in Sources */,
+				22FF29E31F5DD5E200E0FE8A /* SharedSecretCredentials.swift in Sources */,
 				2271DD9B1F13952800494AB6 /* AuthorizationFactory.swift in Sources */,
 				2271DDB61F13952800494AB6 /* X509PublicKey.swift in Sources */,
 				2271DDAE1F13952800494AB6 /* X509AttributeValueType.swift in Sources */,
+				22C6E3781F6942CC00671A26 /* TLSDelegate.swift in Sources */,
+				22F36E861F6D570E0002A61B /* TLSFactoryShared.swift in Sources */,
 				2271DD991F13952800494AB6 /* ACL.swift in Sources */,
 				2271DDB51F13952800494AB6 /* X509Name.swift in Sources */,
 				22D2B6681F3E1B7C00D66B18 /* PKCS10Attribute.swift in Sources */,
 				2273D9F11F24E86300AECF12 /* CredentialsManagerDelegate.swift in Sources */,
+				22FF29D61F5DD17E00E0FE8A /* SharedSecretKey.swift in Sources */,
 				2271DD9C1F13952800494AB6 /* AuthorizationFactoryDB.swift in Sources */,
 				2271DDA51F13952800494AB6 /* NullAuthorization.swift in Sources */,
 				2271DD9F1F13952800494AB6 /* Credentials.swift in Sources */,
@@ -927,6 +987,7 @@
 				22C66D891F3724B700C617A8 /* PrivateKey.swift in Sources */,
 				2271DDAC1F13952800494AB6 /* SecurityManagerShared.swift in Sources */,
 				2271DDB31F13952800494AB6 /* X509Extension.swift in Sources */,
+				22FF29E61F5DD5F000E0FE8A /* SymmeticEncryptionAlgorithm.swift in Sources */,
 				2271DDA91F13952800494AB6 /* PKCS9Constants.swift in Sources */,
 				22D94A481F29FE34007ECF5F /* DEREncoder.swift in Sources */,
 				22D94A471F29FE34007ECF5F /* DERDecoder.swift in Sources */,
@@ -951,6 +1012,7 @@
 				2273D9CB1F24BDFC00AECF12 /* PublicKeyCredentials.swift in Sources */,
 				22D94A451F29FE34007ECF5F /* DERCodable.swift in Sources */,
 				2271DDA11F13952800494AB6 /* Digest.swift in Sources */,
+				22C6E3751F69403F00671A26 /* TLS.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1016,7 +1078,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 45;
+				CURRENT_PROJECT_VERSION = 46;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1075,7 +1137,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 45;
+				CURRENT_PROJECT_VERSION = 46;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1108,7 +1170,7 @@
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 45;
+				DYLIB_CURRENT_VERSION = 46;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "SecurityKit iOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1135,7 +1197,7 @@
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 45;
+				DYLIB_CURRENT_VERSION = 46;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "SecurityKit iOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1193,7 +1255,7 @@
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 45;
+				DYLIB_CURRENT_VERSION = 46;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "SecurityKit macOS/Info.plist";
@@ -1216,7 +1278,7 @@
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 45;
+				DYLIB_CURRENT_VERSION = 46;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "SecurityKit macOS/Info.plist";

@@ -375,7 +375,7 @@ public protocol SecurityManager: class {
          Password strings may be converted to a byte array by encoding the
          string as a UTF-8 byte sequence.
      */
-    func importSharedSecretCredentials(for identity: Identity, with secret: [UInt8], completionHandler completion: @escaping (_ credentials: Credentials?, _ error: Error?) -> Void)
+    func importSharedSecretCredentials(for identity: Identity, with secret: [UInt8], using encryptionAlgorithm: SymmetricEncryptionAlgorithm, completionHandler completion: @escaping (_ credentials: Credentials?, _ error: Error?) -> Void)
     
     /**
      Load shared secret credentials for identity.

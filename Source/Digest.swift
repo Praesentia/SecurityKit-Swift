@@ -69,7 +69,7 @@ public extension Digest {
      A convenience method for updating the digest for a single byte.
      
      - Parameters:
-     - bytes: A byte to be apended to the digest.
+         - bytes: A byte to be apended to the digest.
      */
     public func update(byte: UInt8)
     {

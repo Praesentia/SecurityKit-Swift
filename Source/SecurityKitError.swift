@@ -28,15 +28,17 @@ import Foundation
  Enumeration of SecurityKit error codes.
  */
 public enum SecurityKitError: Int, Error, CustomStringConvertible, LocalizedError {
-    case badCredentials =  1
-    case badSignature   =  2
-    case decodingError  =  3
-    case failed         =  4 // General failure.
-    case invalidData    =  5
-    case notInitialized =  6
-    case notFound       =  7
-    case notPermitted   =  8
-    case notSupported   =  9
+    case badCredentials             =  1
+    case badSignature               =  2
+    case decodingError              =  3
+    case failed                     =  4 // General failure.
+    case invalidData                =  5
+    case notInitialized             =  6
+    case notFound                   =  7
+    case notPermitted               =  8
+    case notSupported               =  9
+    case wouldBlock                 = 10
+    case aborted                    = 11
     
     public var description      : String  { return "SecurityKitError Code=\( rawValue ) \"(\( localizedDescription ))\"" }
     public var errorDescription : String? { return SecurityKitError.localizedDescriptions[self] }

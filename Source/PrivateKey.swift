@@ -28,7 +28,8 @@ import Foundation
 public protocol PrivateKey: Key {
     
     // MARK: - Properties
-    var algorithm: X509Algorithm { get }
+    var algorithm           : X509Algorithm { get }
+    var encryptionAlgorithm : PublicKeyEncryptionAlgorithm { get }
     
 }
 

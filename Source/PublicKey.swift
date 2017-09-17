@@ -28,8 +28,10 @@ import Foundation
 public protocol PublicKey: Key {
     
     // MARK: - Properties
-    var algorithm : X509Algorithm { get }
-    var data      : Data          { get }
+    var algorithm           : X509Algorithm                { get }
+    var encryptionAlgorithm : PublicKeyEncryptionAlgorithm { get }
+    var data                : Data                         { get }
+    var privateKey          : PrivateKey?                  { get }
     
     func fingerprint(using digestType: DigestType) -> [UInt8]
     
