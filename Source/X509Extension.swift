@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,69 +27,54 @@ import Foundation
  
  - Requirement: RFC-5280, 4.1
  */
-public struct X509Extension: DERCodable {
+public struct X509Extension: ASN1Codable {
     
     // MARK: - Properties
-    public var extnID    : OID
-    public var critical  : Bool = false
-    public var extnValue : [UInt8]
+    public var extnID    : ASN1OID
+    public var critical  : Bool?
+    public var extnValue : Data
     
     // MARK: - Initializers
-    
-    public init()
-    {
-        extnID    = OID(components: [])
-        extnValue = []
-    }
-    
-    public init(extnID: OID, extnValue: [UInt8], critical: Bool = false)
+
+    public init(extnID: ASN1OID, extnValue: Data, critical: Bool? = nil)
     {
         self.extnID    = extnID
         self.critical  = critical
         self.extnValue = extnValue
     }
     
-    public init(extnID: OID, codable: DERCodable, critical: Bool = false)
+    public init<T: ASN1Encodable>(extnID: ASN1OID, extnValue: T, critical: Bool? = nil) throws
     {
-        let encoder = DEREncoder()
-        
-        encoder.encode(codable)
-        self.init(extnID: extnID, extnValue: encoder.bytes, critical: critical)
+        let data = try DEREncoder().encode(extnValue)
+
+        self.init(extnID: extnID, extnValue: data, critical: critical)
     }
+
+    // MARK: - ASN1Codable
     
     /**
      Initialize instance from decoder.
      
      - Requirement: RFC 5280, 4.1
      */
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence = try decoder.decoderFromSequence()
+        let sequence = try decoder.sequence()
         
-        extnID = try OID(decoder: sequence)
-        
-        if sequence.peekTag() == DERCoder.TagBoolean {
-            critical = try sequence.decodeBoolean()
-        }
-        else {
-            critical = false
-        }
-        
-        extnValue = try sequence.decodeOctetString()
+        extnID    = try sequence.decode(ASN1OID.self)
+        critical  = try sequence.decodeIfPresent(Bool.self)
+        extnValue = try Data(sequence.decode(ASN1OctetString.self).bytes)
+
         try sequence.assertAtEnd()
     }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
+
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let sequence = DEREncoder()
+        let sequence = try encoder.sequence()
         
-        sequence.encode(extnID)
-        sequence.encodeBoolean(critical)
-        sequence.encodeOctetString(bytes: extnValue)
-        
-        encoder.encodeSequence(bytes: sequence.bytes)
+        try sequence.encode(extnID)
+        try sequence.encode(critical)
+        try sequence.encode(ASN1OctetString(bytes: [UInt8](extnValue)))
     }
     
     

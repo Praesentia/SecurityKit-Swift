@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -64,9 +64,9 @@ public protocol SecurityManager: class {
     // MARK: - Credentials
     
     /**
-     Instantiate credentials from profile.
+     Instantiate credentials from decoder.
      
-     Instantiate credentials from profile data.
+     Instantiate credentials from decoder.
      
      Credentials instantiated in this manner are ephemeral.
      
@@ -76,7 +76,7 @@ public protocol SecurityManager: class {
         - Invariant:
          (error == nil) ⇒ (credentials != nil)
      */
-    func instantiateCredentials(for identity: Identity, from profile: Any, completionHandler completion: @escaping (_ credentials: Credentials?, _ error: Error?) -> Void)
+    func decodeCredentials(from decoder: Decoder) throws -> Credentials
     
     // MARK: - Public Key Certificates
     
@@ -175,7 +175,7 @@ public protocol SecurityManager: class {
      - Invariant:
          (error == nil) ⇒ (credentials != nil)
      */
-    func findPublicKeyCredentials(withFingerprint fingerprint: [UInt8], completionHandler completion: @escaping (PublicKeyCredentials?, Error?) -> Void)
+    func findPublicKeyCredentials(withFingerprint fingerprint: Data, completionHandler completion: @escaping (PublicKeyCredentials?, Error?) -> Void)
 
     /**
      Find list public key credentials with fingerprints.
@@ -189,7 +189,7 @@ public protocol SecurityManager: class {
      - Invariant:
          (error == nil) ⇒ (credentials != nil)
      */
-    func findPublicKeyCredentials(withFingerprints fingerprints: [[UInt8]], completionHandler completion: @escaping ([PublicKeyCredentials]?, Error?) -> Void)
+    func findPublicKeyCredentials(withFingerprints fingerprints: [Data], completionHandler completion: @escaping ([PublicKeyCredentials]?, Error?) -> Void)
 
     /**
      Create public key credentials.
@@ -332,7 +332,7 @@ public protocol SecurityManager: class {
      - Invariant:
          (error == nil) ⇒ (credentials != nil)
      */
-    func instantiatePublicKeyCredentials(for identity: Identity, from data: Data, chain: [Data], completionHandler completion: @escaping (_ credentials: PublicKeyCredentials?, _ error: Error?) -> Void)
+    func instantiatePublicKeyCredentials(from data: Data, chain: [Data], completionHandler completion: @escaping (_ credentials: PublicKeyCredentials?, _ error: Error?) -> Void)
 
     /**
      Instantiate public key credentials.
@@ -375,7 +375,7 @@ public protocol SecurityManager: class {
          Password strings may be converted to a byte array by encoding the
          string as a UTF-8 byte sequence.
      */
-    func importSharedSecretCredentials(for identity: Identity, with secret: [UInt8], using encryptionAlgorithm: SymmetricEncryptionAlgorithm, completionHandler completion: @escaping (_ credentials: Credentials?, _ error: Error?) -> Void)
+    func importSharedSecretCredentials(for identity: Identity, with secret: Data, using encryptionAlgorithm: SymmetricEncryptionAlgorithm, completionHandler completion: @escaping (_ credentials: Credentials?, _ error: Error?) -> Void)
     
     /**
      Load shared secret credentials for identity.

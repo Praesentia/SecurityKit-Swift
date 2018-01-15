@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,16 +23,14 @@ import XCTest
 @testable import SecurityKit
 
 
-class OIDTests: XCTestCase {
+class ASN1OIDTests: XCTestCase {
     
-    func testObjectIdentifier()
+    func testObjectIdentifier() throws
     {
-        let encoder = DEREncoder()
-        let oid     = OID(components: [ 2, 5, 4, 3 ])
+        let oid  = ASN1OID(components: [ 2, 5, 4, 3 ])
+        let data = try DEREncoder().encode(oid)
         
-        encoder.encode(oid)
-        
-        XCTAssertEqual(encoder.bytes, [ 0x06, 0x03, 0x55, 0x04, 0x03 ])
+        XCTAssertEqual([UInt8](data), [ 0x06, 0x03, 0x55, 0x04, 0x03 ])
     }
     
 }

@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import XCTest
 @testable import SecurityKit
 
 
-class X509StringTests: XCTestCase {
+class ASN1StringTests: XCTestCase {
     
     func testInitializers()
     {
-        let stringIA5       = X509String(string: "Foo", encoding: .ia5)
-        let stringPrintable = X509String(string: "Foo", encoding: .printable)
-        let stringUTF8      = X509String(string: "Foo", encoding: .utf8)
+        let stringIA5       = ASN1String(string: "Foo", encoding: .ia5)
+        let stringPrintable = ASN1String(string: "Foo", encoding: .printable)
+        let stringUTF8      = ASN1String(string: "Foo", encoding: .utf8)
         
         XCTAssert(stringIA5.string   == "Foo")
         XCTAssert(stringIA5.encoding == .ia5)

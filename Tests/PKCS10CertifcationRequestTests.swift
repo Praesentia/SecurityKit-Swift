@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,41 +27,15 @@ class PCKS10CertificationRequestTests: XCTestCase {
     
     let certificationRequests = [ testCSRURL ]
     
-    func testInitializers()
+    func testDecoderEncoder()
     {
         for url in certificationRequests {
             do {
-                let data                 = try Data(contentsOf: url)
-                let certificationRequest = PCKS10CertificationRequest(from: data)
-                
-                XCTAssertNotNil(certificationRequest)
-            }
-            catch let error {
-                XCTFail("\(url.pathComponents.last!): \(error)")
-            }
-        }
-    }
-    
-    func testDecoder()
-    {
-        for url in certificationRequests {
-            let data    = try! Data(contentsOf: url)
-            let decoder = DERDecoder(data: data)
-            
-            let _ = try! PCKS10CertificationRequest(decoder: decoder)
-        }
-    }
-    
-    func testEncoder()
-    {
-        for url in certificationRequests {
-            do {
-                let data                 = try Data(contentsOf: url)
-                let certificationRequest = PCKS10CertificationRequest(from: data)!
-                let encoder              = DEREncoder()
-                
-                encoder.encode(certificationRequest)
-                XCTAssertEqual(encoder.data, data)
+                let expected             = try Data(contentsOf: url)
+                let certificationRequest = try DERDecoder().decode(PCKS10CertificationRequest.self, from: expected)
+                let data                 = try DEREncoder().encode(certificationRequest)
+
+                XCTAssertEqual([UInt8](data), [UInt8](expected))
             }
             catch let error {
                 XCTFail("\(url.pathComponents.last!): \(error)")

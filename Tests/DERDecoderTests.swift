@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,15 +23,15 @@ import XCTest
 @testable import SecurityKit
 
 
-class DERDecoderTests: XCTestCase {
+class ASN1DecoderTests: XCTestCase {
     
     func testSequence()
     {
-        let decoder = DERDecoder(bytes: [ 0x30, 0x03, 0x01, 0x02, 0x03 ])
+        let container = DERDecodingContainer(from: [ 0x30, 0x03, 0x01, 0x02, 0x03 ])
         
         do {
-            let bytes = try decoder.decodeSequence()
-            try decoder.assertAtEnd()
+            let bytes = try container.decode([UInt8].self, forTag: .sequence)
+            try container.assert(container.isAtEnd)
             
             XCTAssertEqual(bytes, [ 1, 2, 3 ])
         }

@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -28,17 +28,16 @@ import Foundation
  - Requirements:
      RFC 2986, PKCS #10: Certification Request Syntax Specification Version 1.7
  */
-public struct PCKS10CertificationRequest: DERCodable {
+public struct PCKS10CertificationRequest: ASN1Codable {
     
     // MARK: - Properties
     public var certificationRequestInfo: PCKS10CertificationRequestInfo
     public var signatureAlgorithm      : X509Algorithm
-    public var signature               : [UInt8]
-    public var bytes                   : [UInt8] { return encode() }
+    public var signature               : Data
     
     // MARK: - Initializers
     
-    public init(certificationRequestInfo: PCKS10CertificationRequestInfo, signatureAlgorithm: X509Algorithm, signature: [UInt8])
+    public init(certificationRequestInfo: PCKS10CertificationRequestInfo, signatureAlgorithm: X509Algorithm, signature: Data)
     {
         self.certificationRequestInfo = certificationRequestInfo
         self.signatureAlgorithm       = signatureAlgorithm
@@ -46,57 +45,29 @@ public struct PCKS10CertificationRequest: DERCodable {
     }
     
     /**
-     Initialize from data.
-     
-     - Parameters:
-         - data: PKCS #10 formatted certification request.
-     */
-    public init?(from data: Data)
-    {
-        do {
-            let decoder = DERDecoder(data: data)
-            try self.init(decoder: decoder)
-            try decoder.assertAtEnd()
-        }
-        catch {
-            return nil
-        }
-    }
-    
-    /**
      Decode certifcation request.
      
      */
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence                 = try decoder.decoderFromSequence()
-        let certificationRequestInfo = try PCKS10CertificationRequestInfo(decoder: sequence)
-        let signatureAlgorithm       = try X509Algorithm(decoder: sequence)
-        let signature                = try sequence.decodeBitString()
+        let sequence                 = try decoder.sequence()
+        let certificationRequestInfo = try sequence.decode(PCKS10CertificationRequestInfo.self)
+        let signatureAlgorithm       = try sequence.decode(X509Algorithm.self)
+        let signature                = try Data(sequence.decode(ASN1BitString.self).bytes)
         try sequence.assertAtEnd()
         
         self.init(certificationRequestInfo: certificationRequestInfo, signatureAlgorithm: signatureAlgorithm, signature: signature)
     }
     
-    // MARK: - DERCodable
+    // MARK: - ASN1Encodable
     
-    public func encode(encoder: DEREncoder)
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let sequence = DEREncoder()
-        
-        sequence.encode(certificationRequestInfo)
-        sequence.encode(signatureAlgorithm)
-        sequence.encodeBitString(bytes: signature)
-        
-        encoder.encodeSequence(bytes: sequence.bytes)
-    }
-    
-    private func encode() -> [UInt8]
-    {
-        let encoder = DEREncoder()
-        
-        encoder.encode(self)
-        return encoder.bytes
+        let sequence = try encoder.sequence()
+
+        try sequence.encode(certificationRequestInfo)
+        try sequence.encode(signatureAlgorithm)
+        try sequence.encode(ASN1BitString(bytes: [UInt8](signature)))
     }
     
 }

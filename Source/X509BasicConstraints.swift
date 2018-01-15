@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import Foundation
  
  - Requirement: RFC-5280
  */
-public struct X509BasicConstraints: DERCodable {
+public struct X509BasicConstraints: ASN1Codable {
     
     // MARK: - Properties
     public var ca                : Bool
@@ -51,49 +51,34 @@ public struct X509BasicConstraints: DERCodable {
         self.ca = ca
     }
     
+    // MARK: - ASN1Codable
+
     /**
-     Initialize instance from extension.
+     Initialize instance from decoder.
      */
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence = try decoder.decoderFromSequence()
-        
-        if sequence.peekTag(with: DERCoder.TagBoolean) {
-            ca = try sequence.decodeBoolean()
-        }
-        else {
-            ca = false
-        }
-        
-        if sequence.peekTag(with: DERCoder.TagInteger) {
-            pathLenConstraint = try sequence.decodeUnsignedIntegerAsValue()
-        }
-        
-        try decoder.assertAtEnd()
+        let sequence = try decoder.sequence()
+
+        ca                = try sequence.decodeIfPresent(Bool.self) ?? false
+        pathLenConstraint = try sequence.decodeIfPresent(UInt.self)
+        try sequence.assertAtEnd()
     }
-    
+
     /**
-     Initialize instance from extension.
+     Encode
+
+     - Parameters:
+         - encoder: ASN1Encoder to which the instance will be encoded.tagObjectIdentifier
      */
-    public init(from extn: X509Extension) throws
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let decoder = DERDecoder(bytes: extn.extnValue)
-        try self.init(decoder: decoder)
-        try decoder.assertAtEnd()
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        let sequence = DEREncoder()
-        
-        sequence.encodeBoolean(ca)
-        if let pathLenConstraint = self.pathLenConstraint {
-            sequence.encodeUnsignedInteger(pathLenConstraint)
+        let sequence = try encoder.sequence()
+
+        if ca != false {
+            try sequence.encode(ca)
         }
-        
-        encoder.encodeSequence(bytes: sequence.bytes)
+        try sequence.encode(pathLenConstraint)
     }
     
 }

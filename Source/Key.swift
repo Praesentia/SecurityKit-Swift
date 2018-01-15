@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public protocol Key: class {
      - Returns:
          Returns the signature as a sequence a bytes, or nil.
      */
-    func sign(bytes: [UInt8], using digestType: DigestType) -> [UInt8]
+    func sign(data: Data, using digestType: DigestType) -> Data
     
     /**
      Verify signature for identity.
@@ -53,7 +53,7 @@ public protocol Key: class {
         - signature: The signature to be verified.
         - bytes:     The byte sequence to be verified.
      */
-    func verify(signature: [UInt8], for bytes: [UInt8], using digestType: DigestType) -> Bool
+    func verify(signature: Data, for data: Data, using digestType: DigestType) -> Bool
 }
 
 

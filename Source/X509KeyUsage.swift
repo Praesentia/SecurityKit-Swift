@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import Foundation
  
  - Requirement: RFC 5280
  */
-public struct X509KeyUsage: DERCodable {
+public struct X509KeyUsage: ASN1Codable {
     
     // MARK: - Properties
     public var digitalSignature : Bool
@@ -54,16 +54,16 @@ public struct X509KeyUsage: DERCodable {
         encipherOnly     = true
         decipherOnly     = true
     }
-    
+
     /**
      Initialize instance from extension.
      */
-    public init(from extn: X509Extension) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let decoder = DERDecoder(bytes: extn.extnValue)
-        let bits    = try decoder.decodeBitString()
-        try decoder.assertAtEnd()
-        
+        let container = try decoder.container()
+        let bits      = try container.decode(ASN1BitString.self).bytes
+        try container.assertAtEnd()
+
         // TODO: check unused bits
         digitalSignature = (bits[0] & 0x01) == 0x01
         nonRepudiation   = (bits[0] & 0x02) == 0x02
@@ -73,7 +73,7 @@ public struct X509KeyUsage: DERCodable {
         keyCertSign      = (bits[0] & 0x20) == 0x20
         cRLSign          = (bits[0] & 0x40) == 0x40
         encipherOnly     = (bits[0] & 0x80) == 0x80
-        
+
         if bits.count > 1 {
             decipherOnly = (bits[1] & 0x01) == 0x01
         }
@@ -82,11 +82,12 @@ public struct X509KeyUsage: DERCodable {
         }
     }
     
-    // MARK: - DERCodable
+    // MARK: - ASN1Encodable
     
-    public func encode(encoder: DEREncoder)
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        var bits = [UInt8](repeating: 0, count: 2)
+        let container = try encoder.container()
+        var bits      = [UInt8](repeating: 0, count: 2)
         
         if digitalSignature {
             bits[0] |= 0x01
@@ -124,7 +125,7 @@ public struct X509KeyUsage: DERCodable {
             bits[1] |= 0x01
         }
         
-        encoder.encodeBitString(bytes: bits)
+        try container.encode(ASN1BitString(bytes: bits))
     }
     
 }

@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -28,28 +28,27 @@ import Foundation
  - Requirements:
      RFC 2986, PKCS #10: Certification Request Syntax Specification Version 1.7
  */
-public struct PCKS10CertificationRequestInfo: DERCodable {
+public struct PCKS10CertificationRequestInfo: ASN1Codable {
     
     // MARK: - Properties
-    public let version              : UInt = 0
+    public let version              : UInt?
     public var subject              : X509Name
     public var subjectPublicKeyInfo : X509SubjectPublicKeyInfo
     public var attributes           : [PKCS10Attribute]?
+    public var data                 : Data? { return try? DEREncoder().encode(self) }
     
     // requested extensions
     public var basicConstraints : X509BasicConstraints?
     public var keyUsage         : X509KeyUsage?
-
-    // encoded form
-    public var bytes : [UInt8] { return encode() }
-    public var data  : Data    { return Data(bytes) }
     
     // MARK: - Initializers
     
-    public init(subject: X509Name, subjectPublicKeyInfo: X509SubjectPublicKeyInfo)
+    public init(version: UInt?, subject: X509Name, subjectPublicKeyInfo: X509SubjectPublicKeyInfo, attributes: [PKCS10Attribute]? = nil)
     {
+        self.version              = version
         self.subject              = subject
         self.subjectPublicKeyInfo = subjectPublicKeyInfo
+        self.attributes           = attributes
     }
 
     /**
@@ -58,42 +57,42 @@ public struct PCKS10CertificationRequestInfo: DERCodable {
      - Parameters:
          - decoder: 
      */
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence             = try decoder.decoderFromSequence()
-        let version              = try PCKS10CertificationRequestInfo.decodeVersion(decoder: sequence)
-        let subject              = try X509Name(decoder: sequence)
-        let subjectPublicKeyInfo = try X509SubjectPublicKeyInfo(decoder: sequence)
-        let attributes           = try PCKS10CertificationRequestInfo.decodeAttributes(decoder: sequence)
+        let sequence             = try decoder.sequence()
+        let version              = try sequence.decodeIfPresent(UInt.self)
+        let subject              = try sequence.decode(X509Name.self)
+        let subjectPublicKeyInfo = try sequence.decode(X509SubjectPublicKeyInfo.self)
+        var attributes           : [PKCS10Attribute]?
+
+        if let content = try sequence.contextDefinedContainerIfPresent(id: 0) {
+            attributes = try content.decode([PKCS10Attribute].self)
+        }
+
         try sequence.assertAtEnd()
         try sequence.assert(version == 0)
 
-        self.init(subject: subject, subjectPublicKeyInfo: subjectPublicKeyInfo)
-        self.attributes = attributes
-        
-        if let attributes = attributes {
+        self.init(version: version, subject: subject, subjectPublicKeyInfo: subjectPublicKeyInfo, attributes: attributes)
+
+        if let attributes = self.attributes {
             for attribute in attributes {
                 switch attribute.type {
                 case pkcs9ExtensionRequest :
-                    //try decodeExtensionRequest(decoder: DERDecoder(bytes: attribute.values))
-                    let decoder = DERDecoder(bytes: attribute.values)
-                    repeat {
-                        let extn = try X509Extension(decoder: decoder)
-                        
+                    let extensions = try DERDecoder().decode([X509Extension].self, from: attribute.values)
+                    for extn in extensions {
                         switch extn.extnID {
                         case x509ExtnBasicConstraints :
-                            basicConstraints = try X509BasicConstraints(from: extn)
+                            basicConstraints = try DERDecoder().decode(X509BasicConstraints.self, from: extn.extnValue)
                             break
                             
                         case x509ExtnKeyUsage :
-                            keyUsage = try X509KeyUsage(from: extn)
+                            keyUsage = try DERDecoder().decode(X509KeyUsage.self, from: extn.extnValue)
                             break
                             
                         default :
                             break
                         }
-                        
-                    } while decoder.more
+                    }
                     
                 default :
                     break
@@ -102,122 +101,64 @@ public struct PCKS10CertificationRequestInfo: DERCodable {
         }
     }
     
-    // MARK: - DERCodable
+    // MARK: - ASN1Encodable
     
-    public func encode(encoder: DEREncoder)
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let sequence = DEREncoder()
-        
-        sequence.encode(version)
-        sequence.encode(subject)
-        sequence.encode(subjectPublicKeyInfo)
-        encodeAttributes(encoder: sequence)
-        
-        return encoder.encodeSequence(bytes: sequence.bytes)
-    }
-    
-    private func encode() -> [UInt8]
-    {
-        let encoder = DEREncoder()
-        
-        encoder.encode(self)
-        
-        return encoder.bytes
+        let sequence = try encoder.sequence()
+
+        try sequence.encode(version)
+        try sequence.encode(subject)
+        try sequence.encode(subjectPublicKeyInfo)
+
+        if let attributes = try encodeAttributes() {
+            let content = try sequence.contextDefinedContainer(id: 0)
+            try content.encode(attributes)
+        }
     }
     
     // MARK: - Version
     
-    private static func decodeVersion(decoder: DERDecoder) throws -> UInt
+    private static func decodeVersion(from container: DERDecodingContainer) throws -> UInt
     {
-        var version: UInt = 0
-        
-        if decoder.peekTag(with: DERCoder.TagInteger) {
-            let bytes = try decoder.decodeUnsignedInteger()
-            version = UInt(bytes[0])
-        }
-        
-        return version
+        return try container.decodeIfPresent(UInt.self) ?? 0
     }
     
     // MARK: - Attributes
     
-    private func encodeAttributes(encoder: DEREncoder)
+    private func encodeAttributes() throws -> [PKCS10Attribute]?
     {
-        let content          = DEREncoder()
-        let extensionRequest = DEREncoder()
-        
-        encodeExtensionRequest(encoder: extensionRequest)
-        if !extensionRequest.isEmpty {
-            let attribute = PKCS10Attribute(type: pkcs9ExtensionRequest, values: extensionRequest.bytes)
-            content.encode(attribute)
-        }
-        
-        if let attributes = self.attributes {
-            for attribute in attributes {
-                content.encode(attribute)
-            }
-        }
-        
-        if !content.isEmpty {
-            encoder.encodeContextDefinedTag(id: 0, bytes: content.bytes)
-        }
-    }
-    
-    private static func decodeAttributes(decoder: DERDecoder) throws -> [PKCS10Attribute]?
-    {
-        var attributes: [PKCS10Attribute]!
+        var attributes: [PKCS10Attribute]! = self.attributes
 
-        if decoder.peekContextDefinedTag(id: 0) {
-            let content = try decoder.decoderFromContextDefinedTag(id: 0)
-    
-            if content.more {
-                attributes = [PKCS10Attribute]()
-                repeat {
-                    let attribute = try PKCS10Attribute(decoder: content)
-                    attributes.append(attribute)
-                } while content.more
+        if attributes == nil, let extensions = try encodeExtensions() {
+            attributes = [PKCS10Attribute]()
+            for extn in extensions {
+                let values    = try DEREncoder().encode(extn)
+                let attribute = PKCS10Attribute(type: pkcs9ExtensionRequest, values: values)
+                attributes.append(attribute)
             }
         }
-        
+
         return attributes
     }
-    
+
     // MARK: - Extension Request
 
-    /*
-    private func decodeExtensionRequest(decoder: DERDecoder) throws
+    private func encodeExtensions() throws -> [X509Extension]?
     {
-        repeat {
-            let extn = try X509Extension(decoder: decoder)
-            
-            switch extn.extnID {
-            case x509ExtnBasicConstraints :
-                basicConstraints = try X509BasicConstraints(from: extn)
-                break
-                
-            case x509ExtnKeyUsage :
-                keyUsage = try X509KeyUsage(from: extn)
-                break
-                
-            default :
-                break
-            }
-            
-        } while decoder.more
-    }
-    */
-    
-    private func encodeExtensionRequest(encoder: DEREncoder)
-    {
+        var extensions = [X509Extension]()
+
         if let basicConstraints = self.basicConstraints {
-            let extn = X509Extension(extnID: x509ExtnBasicConstraints, codable: basicConstraints, critical: true)
-            encoder.encode(extn)
+            let extn = try X509Extension(extnID: x509ExtnBasicConstraints, extnValue: basicConstraints, critical: true)
+            extensions.append(extn)
         }
         
         if let keyUsage = self.keyUsage {
-            let extn = X509Extension(extnID: x509ExtnKeyUsage, codable: keyUsage, critical: true)
-            encoder.encode(extn)
+            let extn = try X509Extension(extnID: x509ExtnKeyUsage, extnValue: keyUsage, critical: true)
+            extensions.append(extn)
         }
+
+        return extensions.isEmpty ? nil : extensions
     }
 
     

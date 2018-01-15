@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,12 +24,14 @@ import Foundation
 
 /**
  Identity
- 
+
+ In terms of X509 Names, the identity name usually conforms to a Common Name.
+
  - Remark:
     Identity instances are immutable to prevent unintended side-effects.
     Changes to an identity requires the creation of a new instance.
  */
-public class Identity: Equatable {
+public class Identity: Equatable, Codable {
     
     /**
      Identity type.
@@ -37,19 +39,25 @@ public class Identity: Equatable {
      Different types of identities may use different naming conventions.  The
      identity type separates namespaces to prevent conflicts.
      */
-    public enum IdentityType {
-        case device       //: Devices.
-        case organization //: An organization, such as a certificate authority.
-        case other
-        case user         //: An actual person.
+    public enum IdentityType: String, Codable {
+        case device       = "device"       //: Devices.
+        case organization = "organization" //: An organization, such as a certificate authority.
+        case other        = "other"        //: Catch all for any other type of identity.
+        case person       = "person"       //: A person.
     }
     
     // MARK: - Properties
-    public var  profile : Any         { return getProfile() }
-    public let  name    : String
-    public let  type    : IdentityType
-    public var  string  : String       { return "\(type.prefix)\(name)" }
-    
+    public let name    : String
+    public let type    : IdentityType
+    public var string  : String { return "\(type.prefix)\(name)" }
+
+    // MARK: - Private
+
+    private enum CodingKeys: CodingKey {
+        case name
+        case type
+    }
+
     // MARK: - Initializers
     
     /**
@@ -62,59 +70,54 @@ public class Identity: Equatable {
     }
     
     /**
-     Initialize instance from profile.
-     */
-    public init(from profile: Any)
-    {
-        let profile = profile as! [String : Any]
-        
-        self.name = profile[KeyName] as! String
-        self.type = IdentityType(string: profile[KeyType] as! String)!
-    } 
-    
-    /**
      Initialize instance from string.
      */
     public convenience init?(from string: String) // TODO
     {
-        var t: IdentityType?
-        var n: String?
+        var identityType : IdentityType!
+        var name         : String!
         
         if string.hasPrefix(Identity.IdentityType.PrefixDevice) {
-            n = String(string.suffix(string.count - 18))
-            t = .device
+            name = String(string.suffix(string.count - Identity.IdentityType.PrefixDevice.count))
+            identityType = .device
         }
     
-        if string.hasPrefix(Identity.IdentityType.PrefixUser) {
-            n = String(string.suffix(string.count - 16))
-            t = .user
+        if string.hasPrefix(Identity.IdentityType.PrefixPerson) {
+            name = String(string.suffix(string.count - Identity.IdentityType.PrefixPerson.count))
+            identityType = .person
         }
     
         if string.hasPrefix(Identity.IdentityType.PrefixOrganization) {
-            n = String(string.suffix(string.count - 24))
-            t = .organization
+            name = String(string.suffix(string.count - Identity.IdentityType.PrefixOrganization.count))
+            identityType = .organization
         }
         
-        if t != nil {
-            self.init(named: n!, type: t!)
+        if identityType != nil {
+            self.init(named: name, type: identityType)
         }
         else {
             self.init(named: string, type: .other)
         }
     }
-    
-    // MARK: - Profile Management
-    
-    private func getProfile() -> Any
+
+    // MARK: - Codable
+
+    required public init(from decoder: Decoder) throws
     {
-        var profile = [String : Any]()
-        
-        profile[KeyName] = name
-        profile[KeyType] = type.string
-        
-        return profile
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        type = try container.decode(IdentityType.self, forKey: .type)
+        name = try container.decode(String.self, forKey: .name)
     }
-    
+
+    public func encode(to encoder: Encoder) throws
+    {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(type, forKey: .type)
+        try container.encode(name, forKey: .name)
+    }
+
 }
 
 // MARK: - Equatable
@@ -130,11 +133,12 @@ public func ==(lhs: Identity, rhs: Identity) -> Bool
 // MARK: - Extensions
 
 public extension Identity.IdentityType {
-    
+
+    // TODO: no longer specific to medkit
     static let PrefixDevice       = "org.medkit.device."
     static let PrefixOrganization = "org.medkit.organization."
     static let PrefixOther        = ""
-    static let PrefixUser         = "org.medkit.user."
+    static let PrefixPerson       = "org.medkit.person."
     
     public init?(string: String)
     {
@@ -148,8 +152,8 @@ public extension Identity.IdentityType {
         case "Other" :
             self = .other
             
-        case "User" :
-            self = .user
+        case "Person" :
+            self = .person
 
         default :
             return nil
@@ -167,8 +171,8 @@ public extension Identity.IdentityType {
         case .other :
             return Identity.IdentityType.PrefixOther
             
-        case .user :
-            return Identity.IdentityType.PrefixUser
+        case .person :
+            return Identity.IdentityType.PrefixPerson
         }
     }
     
@@ -183,8 +187,8 @@ public extension Identity.IdentityType {
         case .other :
             return "Other"
         
-        case .user :
-            return "User"
+        case .person :
+            return "Person"
         }
     }
     

@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,14 +22,11 @@
 import Foundation
 
 
-// string constants
-fileprivate let NullString = "Null"
-
 /**
  Credentials type.
  */
-public enum AuthorizationType {
-    case null
+public enum AuthorizationType: String, Codable {
+    case null = "null"
     
     /**
      Initialize instance from string.
@@ -39,13 +36,7 @@ public enum AuthorizationType {
      */
     init?(string: String)
     {
-        switch string {
-        case NullString:
-            self = .null
-            
-        default :
-            return nil
-        }
+        self.init(rawValue: string)
     }
     
     /**
@@ -54,12 +45,8 @@ public enum AuthorizationType {
      - Returns:
         Returns a string representation for the authorization type.
      */
-    public var string: String {
-        switch self {
-        case .null:
-            return NullString
-        }
-    }
+    public var string: String { return rawValue }
+
 }
 
 

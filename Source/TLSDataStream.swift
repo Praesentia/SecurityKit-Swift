@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
 
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,10 +22,26 @@
 import Foundation
 
 
+/**
+ TLS Data Stream Protocol
+ */
 public protocol TLSDataStream: class {
 
-    func tlsRead(_ tls: TLS, _ data: UnsafeMutableRawBufferPointer, _ dataLength: inout Int) -> Error?
-    func tlsWrite(_ tls: TLS, _ data: Data, _ count: inout Int) -> Error?
+    /**
+     Read data.
+
+     - Invariant:
+         (error == nil) ⇒ (data != nil)
+     */
+    func tlsRead(_ context: TLS, _ count: Int) -> (data: Data?, error: Error?)
+
+    /**
+     Write data.
+
+     - Invariant:
+         (error == nil) ⇒ (count != nil)
+     */
+    func tlsWrite(_ context: TLS, _ data: Data) -> (count: Int?, error: Error?)
 
 }
 

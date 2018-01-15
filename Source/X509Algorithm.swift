@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 import Foundation
 
 
-public struct X509Algorithm: DERCodable {
+public struct X509Algorithm: ASN1Codable {
     
     // MARK: - Class Properties
     public static let rsaEncryption           = X509Algorithm(oid: pkcs1RSAEncryption)
@@ -33,7 +33,7 @@ public struct X509Algorithm: DERCodable {
     public static let sha512WithRSAEncryption = X509Algorithm(oid: pkcs1SHA512WithRSAEncryption)
     
     // MARK - Private Class Properties
-    private static let mapAlgorithmToDigest : [ OID : DigestType ] = [
+    private static let mapAlgorithmToDigest : [ ASN1OID : DigestType ] = [
         pkcs1MD5WithRSAEncryption    : .md5,
         pkcs1SHA1WithRSAEncryption   : .sha1,
         pkcs1SHA256WithRSAEncryption : .sha256,
@@ -41,7 +41,7 @@ public struct X509Algorithm: DERCodable {
         pkcs1SHA512WithRSAEncryption : .sha512
     ]
     
-    private static let localizedDescriptions : [ OID : String ] = [
+    private static let localizedDescriptions : [ ASN1OID : String ] = [
         pkcs1RSAEncryption           : NSLocalizedString("RSA Encryption",              comment: "X509 algorithm."),
         pkcs1MD5WithRSAEncryption    : NSLocalizedString("MD5 with RSA Encryption",     comment: "X509 algorithm."),
         pkcs1SHA1WithRSAEncryption   : NSLocalizedString("SHA-1 with RSA Encryption",   comment: "X509 algorithm."),
@@ -51,39 +51,59 @@ public struct X509Algorithm: DERCodable {
     ]
     
     // MARK: - Properties
-    public var oid                 : OID
+    public var oid                 : ASN1OID
     public var parameters          : [UInt8]?
     public var digest              : DigestType? { return X509Algorithm.mapAlgorithmToDigest[oid] }
     public var localizedDescription: String?     { return X509Algorithm.localizedDescriptions[oid] }
 
     // MARK: - Initializers
-    
-    public init(oid: OID, parameters: [UInt8]? = nil)
+
+    /**
+     Initializer
+
+     - Parameters:
+         - oid:        An ASN1OID used to identify the algorithm.
+         - parameters: Algorithm parameters.
+     */
+    public init(oid: ASN1OID, parameters: [UInt8]? = nil)
     {
         self.oid        = oid
         self.parameters = parameters
     }
+
+    // MARK: - ASN1Codable
     
-    public init(decoder: DERDecoder) throws
+    /**
+     Decode
+
+     - Parameters:
+         - decoder: DER Decoder instance.
+
+     - Throws:
+
+     */
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence   = try decoder.decoderFromSequence()
-        let oid        = try OID(decoder: sequence)
+        let sequence   = try decoder.sequence()
+        let oid        = try sequence.decode(ASN1OID.self)
         let parameters = try sequence.decodeNull()
         try sequence.assertAtEnd()
         
         self.init(oid: oid, parameters: parameters)
     }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
+
+    /**
+     Encode
+
+     - Parameters:
+         - encoder: ASN1Encoder to which the instance will be encoded.
+     */
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let sequence = DEREncoder()
+        let sequence  = try encoder.sequence()
         
-        sequence.encode(oid)
-        sequence.encodeNull()
-        
-        encoder.encodeSequence(bytes: sequence.bytes)
+        try sequence.encode(oid)
+        try sequence.encodeNull()
     }
     
 }

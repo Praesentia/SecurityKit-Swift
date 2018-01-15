@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
 
- Copyright 2016-2017 Jon Griffeth
+ Copyright 2016-2018 Jon Griffeth
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@
 import Foundation
 
 
-public enum SymmetricEncryptionAlgorithm {
-    case aes128
-    case aes192
-    case aes256
+public enum SymmetricEncryptionAlgorithm: String, Codable {
+    case aes128 = "aes128"
+    case aes192 = "aes192"
+    case aes256 = "aes256"
 }
 
 public extension SymmetricEncryptionAlgorithm {

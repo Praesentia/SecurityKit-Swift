@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -25,12 +25,12 @@ import Foundation
 /**
  ASN.1 Object Identifier
  */
-public struct OID: Equatable, Hashable, DERCodable {
+public struct ASN1OID: Equatable, Hashable, ASN1Codable {
     
     // MARK: - Properties
     
     /**
-     OID components.
+     ASN1OID components.
      */
     public var components: [UInt]
     
@@ -65,15 +65,18 @@ public struct OID: Equatable, Hashable, DERCodable {
         self.components = prefix + components
     }
     
-    public init(prefix: OID, components: [UInt])
+    public init(prefix: ASN1OID, components: [UInt])
     {
         self.components = prefix.components + components
     }
+
+    // MARK: - ASN1Codable
     
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let bytes = try decoder.decode(with: DERCoder.TagObjectIdentifier)
-        try decoder.assert(bytes.count > 0)
+        let container = try decoder.container()
+        let bytes     = try container.decode([UInt8].self, forTag: .objectIdentifier)
+        try container.assert(bytes.count > 0)
         
         var oid      = [UInt]()
         let oid0     = bytes[0] / 40
@@ -102,11 +105,10 @@ public struct OID: Equatable, Hashable, DERCodable {
         self.init(components: oid)
     }
     
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        var value = [UInt8]()
+        let container = try encoder.container()
+        var value     = [UInt8]()
         
         value += [UInt8(40 * components[0] + components[1])]
         
@@ -124,12 +126,12 @@ public struct OID: Equatable, Hashable, DERCodable {
             value += fragment.reversed()
         }
         
-        encoder.encodeTag(tag: DERCoder.TagObjectIdentifier, bytes: value)
+        try container.encode(value, forTag: .objectIdentifier)
     }
     
     // MARK: - Equatable
     
-    public static func ==(_ lhs: OID, _ rhs: OID) -> Bool
+    public static func ==(_ lhs: ASN1OID, _ rhs: ASN1OID) -> Bool
     {
         return lhs.components == rhs.components
     }

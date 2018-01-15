@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2016-2017 Jon Griffeth
+ Copyright 2016-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public protocol Digest: class {
      - Returns:
         Retuns a byte array representing the digest.
      */
-    func final() -> [UInt8]
+    func final() -> Data
     
     /**
      Reset state.
@@ -57,12 +57,18 @@ public protocol Digest: class {
 
 public extension Digest {
     
-    public func hash(bytes: [UInt8]) -> [UInt8]
+    public func hash(bytes: [UInt8]) -> Data
     {
         update(bytes: bytes)
         return final()
     }
-    
+
+    public func hash(data: Data) -> Data
+    {
+        update(data: data)
+        return final()
+    }
+
     /**
      Update digest.
      
@@ -87,7 +93,17 @@ public extension Digest {
             update(bytes: bytes)
         }
     }
-    
+
+    /**
+     Update digest from data.
+
+     A convenience method for updating the digest from optional data.
+     */
+    public func update(data: Data)
+    {
+        update(bytes: [UInt8](data))
+    }
+
     /**
      Update digest from data.
      

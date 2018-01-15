@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 import Foundation
 
 
-public struct X509SubjectPublicKeyInfo: DERCodable {
+public struct X509SubjectPublicKeyInfo: ASN1Codable {
     
     // MARK: - Properties
     public var algorithm        : X509Algorithm
@@ -36,26 +36,26 @@ public struct X509SubjectPublicKeyInfo: DERCodable {
         self.subjectPublicKey = subjectPublicKey
     }
 
-    public init(decoder: DERDecoder) throws
+    // MARK: - ASN1Codable
+
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence = try decoder.decoderFromSequence()
+        let container = try decoder.container()
+        let sequence  = try container.sequence()
         
-        algorithm        = try X509Algorithm(decoder: sequence)
-        subjectPublicKey = try X509PublicKey(decoder: sequence)
+        algorithm        = try sequence.decode(X509Algorithm.self)
+        subjectPublicKey = try sequence.decode(X509PublicKey.self)
         
         try sequence.assertAtEnd()
     }
     
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let sequence = DEREncoder()
+        let container = try encoder.container()
+        let sequence  = try container.sequence()
 
-        sequence.encode(algorithm)
-        sequence.encode(subjectPublicKey)
-        
-        encoder.encodeSequence(bytes: sequence.bytes)
+        try sequence.encode(algorithm)
+        try sequence.encode(subjectPublicKey)
     }
     
 }

@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,18 +22,13 @@
 import Foundation
 
 
-// string constants
-fileprivate let NullString         = "Null"
-fileprivate let PublicKeyString    = "Public Key"
-fileprivate let SharedSecretString = "Shared Secret"
-
 /**
  Credentials type.
  */
-public enum CredentialsType {
-    case null
-    case publicKey
-    case sharedSecret
+public enum CredentialsType: String, Codable {
+    case null         = "null"
+    case publicKey    = "publicKey"
+    case sharedSecret = "sharedSecret"
     
     /**
      Initialize instance from string.
@@ -43,19 +38,7 @@ public enum CredentialsType {
      */
     public init?(string: String)
     {
-        switch string {
-        case NullString :
-            self = .null
-            
-        case PublicKeyString :
-            self = .publicKey
-            
-        case SharedSecretString :
-            self = .sharedSecret
-            
-        default :
-            return nil
-        }
+        self.init(rawValue: string)
     }
     
     /**
@@ -64,18 +47,8 @@ public enum CredentialsType {
      - Returns:
         Returns a string representation for the credentials type.
      */
-    public var string: String {
-        switch self {
-        case .null :
-            return NullString
-
-        case .publicKey :
-            return PublicKeyString
-            
-        case .sharedSecret :
-            return SharedSecretString
-        }
-    }
+    public var string: String { return rawValue }
+    
 }
 
 

@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import Foundation
  
  - Requirement: RFC-5280
  */
-public struct X509Validity: DERCodable {
+public struct X509Validity: ASN1Codable {
     
     // MARK: - Properties
     public var period: ClosedRange<Date>
@@ -49,18 +49,21 @@ public struct X509Validity: DERCodable {
     {
         self.init(period: date...date.addingTimeInterval(timeInterval))
     }
+
+    // MARK: - ASN1Codable
     
     /**
      Initialize instance from decoder.
      
      - Requirement: RFC 5280
      */
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence = try decoder.decoderFromSequence()
+        let container = try decoder.container()
+        let sequence  = try container.sequence()
         
-        let fromDate  = try sequence.decodeUTCTime()
-        let untilDate = try sequence.decodeUTCTime()
+        let fromDate  = try sequence.decode(ASN1Time.self).time
+        let untilDate = try sequence.decode(ASN1Time.self).time
         
         try sequence.assert(fromDate <= untilDate)
         try sequence.assertAtEnd()
@@ -68,18 +71,14 @@ public struct X509Validity: DERCodable {
         period = fromDate ... untilDate
     }
     
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let sequence = DEREncoder()
+        let container = try encoder.container()
+        let sequence  = try container.sequence()
         
-        sequence.encodeUTCTime(period.lowerBound)
-        sequence.encodeUTCTime(period.upperBound)
-        
-        encoder.encodeSequence(bytes: sequence.bytes)
+        try sequence.encode(ASN1Time(time: period.lowerBound))
+        try sequence.encode(ASN1Time(time: period.upperBound))
     }
-
     
     // MARK: - Containment
     

@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -47,16 +47,11 @@ public class AuthorizationFactoryDB {
     /**
      Create credentials from profile.
      */
-    public func instantiate(from profile: Any) -> Authorization
+    public func instantiate(with type: AuthorizationType, from decoder: Decoder) -> Authorization
     {
-        if let dict = profile as? [String : Any] {
-            if let string = dict[KeyType] as? String, let type = AuthorizationType(string: string) {
-                if let factory = factories[type] {
-                    return factory.instantiate(from: profile)
-                }
-            }
+        if let factory = factories[type] {
+            return factory.instantiate(from: decoder)
         }
-        
         return NullAuthorization.shared
     }
     

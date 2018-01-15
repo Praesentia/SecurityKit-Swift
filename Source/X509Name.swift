@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,16 +27,16 @@ import Foundation
  
  - Requirement: RFC-5280
  */
-public struct X509Name: Equatable, DERCodable {
+public struct X509Name: Equatable, ASN1Codable {
     
     // MARK: - Properties
-    public var commonName             : X509String?
-    public var localityName           : X509String?
-    public var stateOrProvinceName    : X509String?
-    public var countryName            : X509String?
-    public var organizationName       : X509String?
-    public var organizationalUnitName : X509String?
-    public var emailAddress           : X509String?
+    public var commonName             : ASN1String?
+    public var localityName           : ASN1String?
+    public var stateOrProvinceName    : ASN1String?
+    public var countryName            : ASN1String?
+    public var organizationName       : ASN1String?
+    public var organizationalUnitName : ASN1String?
+    public var emailAddress           : ASN1String?
     
     public var string : String { return formatString() }
     
@@ -53,12 +53,15 @@ public struct X509Name: Equatable, DERCodable {
      */
     public init(from identity: Identity)
     {
-        commonName = X509String(string: identity.string, encoding: .utf8)
+        commonName = ASN1String(string: identity.string, encoding: .utf8)
     }
+
+    // MARK: - ASN1Codable
     
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence = try decoder.decoderFromSequence()
+        let container = try decoder.container()
+        let sequence  = try container.sequence()
         
         commonName             = nil
         countryName            = nil
@@ -69,10 +72,10 @@ public struct X509Name: Equatable, DERCodable {
         emailAddress           = nil
         
         repeat {
-            let set = try sequence.decoderFromSet()
+            let set = try sequence.set()
             
             repeat {
-                let attributeTypeValue = try X509AttributeValueType(decoder: set)
+                let attributeTypeValue = try set.decode(X509AttributeValueType.self)
                 
                 switch attributeTypeValue.oid {
                 case x520CommonName :
@@ -100,13 +103,59 @@ public struct X509Name: Equatable, DERCodable {
                     throw SecurityKitError.decodingError
                 }
                 
-            } while set.more
-        } while sequence.more
+            } while !set.isAtEnd
+        } while !sequence.isAtEnd
         
         cache = sequence.bytes
     }
-    
-    
+
+    public func encode(to encoder: ASN1Encoder) throws
+    {
+        let container = try encoder.container()
+
+        if let cache = self.cache {
+            try container.encode(cache)
+            return
+        }
+
+        let sequence = try container.sequence()
+
+        if let commonName = commonName {
+            let set = try sequence.set()
+            try set.encode(X509AttributeValueType(oid: x520CommonName, value: commonName))
+        }
+
+        if let countryName = countryName {
+            let set = try sequence.set()
+            try set.encode(X509AttributeValueType(oid: x520CountryName, value: countryName))
+        }
+
+        if let localityName = localityName {
+            let set = try sequence.set()
+            try set.encode(X509AttributeValueType(oid: x520LocalityName, value: localityName))
+        }
+
+        if let stateOrProvinceName = stateOrProvinceName {
+            let set = try sequence.set()
+            try set.encode(X509AttributeValueType(oid: x520StateOrProvinceName, value: stateOrProvinceName))
+        }
+
+        if let organizationName = organizationName {
+            let set = try sequence.set()
+            try set.encode(X509AttributeValueType(oid: x520OrganizationName, value: organizationName))
+        }
+
+        if let organizationalUnitName = organizationalUnitName {
+            let set = try sequence.set()
+            try set.encode(X509AttributeValueType(oid: x520OrganizationalUnitName, value: organizationalUnitName))
+        }
+
+        if let emailAddress = emailAddress {
+            let set = try sequence.set()
+            try set.encode(X509AttributeValueType(oid: pkcs9EmailAddress, value: emailAddress))
+        }
+    }
+
     // MARK: - Private
     
     private func formatString() -> String
@@ -134,62 +183,6 @@ public struct X509Name: Equatable, DERCodable {
             lhs.organizationName       == rhs.organizationName       &&
             lhs.organizationalUnitName == rhs.organizationalUnitName &&
             lhs.emailAddress           == rhs.emailAddress
-    }
-
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        if let cache = self.cache {
-            encoder.encode(bytes: cache)
-            return
-        }
-        
-        let encoder1 = DEREncoder()
-        
-        if let commonName = commonName {
-            let set = DEREncoder()
-            set.encode(X509AttributeValueType(oid: x520CommonName, value: commonName))
-            encoder1.encodeSet(bytes: set.bytes)
-        }
-        
-        if let countryName = countryName {
-            let set = DEREncoder()
-            set.encode(X509AttributeValueType(oid: x520CountryName, value: countryName))
-            encoder1.encodeSet(bytes: set.bytes)
-        }
-        
-        if let localityName = localityName {
-            let set = DEREncoder()
-            set.encode(X509AttributeValueType(oid: x520LocalityName, value: localityName))
-            encoder1.encodeSet(bytes: set.bytes)
-        }
-        
-        if let stateOrProvinceName = stateOrProvinceName {
-            let set = DEREncoder()
-            set.encode(X509AttributeValueType(oid: x520StateOrProvinceName, value: stateOrProvinceName))
-            encoder1.encodeSet(bytes: set.bytes)
-        }
-        
-        if let organizationName = organizationName {
-            let set = DEREncoder()
-            set.encode(X509AttributeValueType(oid: x520OrganizationName, value: organizationName))
-            encoder1.encodeSet(bytes: set.bytes)
-        }
-        
-        if let organizationalUnitName = organizationalUnitName {
-            let set = DEREncoder()
-            set.encode(X509AttributeValueType(oid: x520OrganizationalUnitName, value: organizationalUnitName))
-            encoder1.encodeSet(bytes: set.bytes)
-        }
-        
-        if let emailAddress = emailAddress {
-            let set = DEREncoder()
-            set.encode(X509AttributeValueType(oid: pkcs9EmailAddress, value: emailAddress))
-            encoder1.encodeSet(bytes: set.bytes)
-        }
-        
-        encoder.encodeSequence(bytes: encoder1.bytes)
     }
     
 }

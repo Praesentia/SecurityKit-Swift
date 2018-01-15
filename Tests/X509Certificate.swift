@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -26,28 +26,15 @@ import XCTest
 class X509CertificateTests: XCTestCase {
     
     let certificates = [ testCERURL, testCACERURL ]
-    
-    func testInitializers()
+    func testDecoderEncoder()
     {
         for url in certificates {
             do {
-                let data = try Data(contentsOf: url)
-                let _    = X509Certificate(from: data)
-            }
-            catch let error {
-                XCTFail("\(url.pathComponents.last!): \(error)")
-            }
-        }
-    }
-    
-    func testDecoder()
-    {
-        for url in certificates {
-            do {
-                let data     = try Data(contentsOf: url)
-                let decoder  = DERDecoder(data: data)
-                let _        = try X509Certificate(decoder: decoder)
-                try decoder.assertAtEnd()
+                let expected    = try Data(contentsOf: url)
+                let certificate = try DERDecoder().decode(X509Certificate.self, from: expected)
+                let data        = try DEREncoder().encode(certificate)
+
+                XCTAssertEqual(data, expected)
             }
             catch let error {
                 XCTFail("\(url.pathComponents.last!): \(error)")

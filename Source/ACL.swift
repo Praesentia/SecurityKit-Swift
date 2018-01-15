@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2016-2017 Jon Griffeth
+ Copyright 2016-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -37,14 +37,6 @@ public class ACL {
             self.operations = operations
         }
         
-        init(from profile: Any)
-        {
-            let profile = profile as! [String : Any]
-            
-            identity   = UUID(uuidString: profile[KeyIdentity] as! String)!
-            operations = [] // FIX profile[KeyOperations].array!.map() { e in e.uuid! }
-        }
-        
         func authorized(operation: UUID) -> Bool
         {
             return operations.contains(operation)
@@ -58,18 +50,6 @@ public class ACL {
      */
     public init()
     {
-    }
-    
-    /**
-     Initialize instance from profile.
-     */
-    public init(profile: Any)
-    {
-        if let array = profile as? [Any] {
-            for subject in array {
-                subjects.append(Subject(from: subject))
-            }
-        }
     }
     
     /**

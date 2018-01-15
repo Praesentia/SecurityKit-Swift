@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,40 +22,43 @@
 import Foundation
 
 
-public struct X509AttributeValueType: DERCodable {
+public struct X509AttributeValueType: ASN1Codable {
     
     // MARK: - Properties
-    public var oid   : OID
-    public var value : X509String
+    public var oid   : ASN1OID
+    public var value : ASN1String
     
     // MARK: - Initializers
     
-    public init(oid: OID, value: X509String)
+    public init(oid: ASN1OID, value: ASN1String)
     {
         self.oid   = oid
         self.value = value
     }
+
+    // MARK: - ASN1Codable
     
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder)  throws
     {
-        let sequence = try decoder.decoderFromSequence()
+        let sequence = try decoder.sequence()
         
-        oid   = try OID(decoder: sequence)
-        value = try X509String(decoder: sequence)
-        
+        oid   = try sequence.decode(ASN1OID.self)
+        value = try sequence.decode(ASN1String.self)
         try sequence.assertAtEnd()
     }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
+
+    /**
+     Encode
+
+     - Parameters:
+         - encoder: ASN1Encoder to which the instance will be encoded.
+     */
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let sequence = DEREncoder()
+        let sequence = try encoder.sequence()
         
-        sequence.encode(oid)
-        sequence.encode(value)
-        
-        return encoder.encodeSequence(bytes: sequence.bytes)
+        try sequence.encode(oid)
+        try sequence.encode(value)
     }
     
 }

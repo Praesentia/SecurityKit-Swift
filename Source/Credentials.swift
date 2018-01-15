@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import Foundation
  component of the credentials.  This is the profile that is exchanged
  between entities during authentication.
  */
-public protocol Credentials: class  {
+public protocol Credentials: Codable  {
     
     // MARK: - Properties
     
@@ -42,11 +42,6 @@ public protocol Credentials: class  {
      The identity associated with the certificate.
      */
     var identity: Identity? { get }
-    
-    /**
-     A JSON profile representing the public credentials.
-     */
-    var profile: Any { get }
     
     /**
      The credentials type
@@ -62,9 +57,9 @@ public protocol Credentials: class  {
     
     // MARK: - Signing
     
-    func sign(bytes: [UInt8], using digestType: DigestType) -> [UInt8]?
+    func sign(data: Data, using digestType: DigestType) -> Data?
     
-    func verify(signature: [UInt8], for bytes: [UInt8], using digestType: DigestType) -> Bool
+    func verify(signature: Data, for data: Data, using digestType: DigestType) -> Bool
     
     // MARK: - Authentication
     

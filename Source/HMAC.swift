@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2016-2017 Jon Griffeth
+ Copyright 2016-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import Foundation
  */
 public protocol HMAC: class {
     
-    func sign(bytes: [UInt8], using secret: [UInt8]) -> [UInt8]
-    
+    func sign(data: Data, using secret: Data) -> Data
+
 }
 
 

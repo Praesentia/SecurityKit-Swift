@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2016-2017 Jon Griffeth
+ Copyright 2016-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -30,9 +30,12 @@ public class NullAuthorization: Authorization {
     public static let shared = NullAuthorization()
     
     public var expires : TimeInterval?     { return nil }
-    public var profile : Any               { return getProfile() }
     public var string  : String            { return "null" }
     public var type    : AuthorizationType { return .null }
+
+    // MARK: - Private
+    private enum CodingKeys: CodingKey {
+    }
     
     /**
      Initialize instance.
@@ -40,7 +43,19 @@ public class NullAuthorization: Authorization {
     private init()
     {
     }
-    
+
+    // MARK: - Codable
+
+    public required init(from decoder: Decoder) throws
+    {
+        let _ = try decoder.container(keyedBy: CodingKeys.self)
+    }
+
+    public func encode(to encoder: Encoder) throws
+    {
+        let _ = encoder.container(keyedBy: CodingKeys.self)
+    }
+
     /**
      Is operation authorized.
      
@@ -49,15 +64,6 @@ public class NullAuthorization: Authorization {
     public func authorized(operation: UUID) -> Bool
     {
         return false
-    }
-    
-    private func getProfile() -> Any
-    {
-        var profile = [String : Any]()
-        
-        profile[KeyType] = type.string
-        
-        return profile
     }
     
 }

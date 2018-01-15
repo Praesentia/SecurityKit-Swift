@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -40,8 +40,9 @@ public enum SecurityKitError: Int, Error, CustomStringConvertible, LocalizedErro
     case wouldBlock                 = 10
     case aborted                    = 11
     
-    public var description      : String  { return "SecurityKitError Code=\( rawValue ) \"(\( localizedDescription ))\"" }
-    public var errorDescription : String? { return SecurityKitError.localizedDescriptions[self] }
+    public var description          : String  { return "SecurityKitError Code=\( rawValue )" }
+    public var errorDescription     : String? { return SecurityKitError.localizedDescriptions[self] }
+    public var localizedDescription : String? { return SecurityKitError.localizedDescriptions[self] }
 }
 
 extension SecurityKitError {

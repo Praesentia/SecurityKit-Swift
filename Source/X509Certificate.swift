@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,76 +22,63 @@
 import Foundation
 
 
-public struct X509Certificate: DERCodable {
+public struct X509Certificate: ASN1Codable {
     
     // MARK: - Protected
     public var tbsCertificate : X509TBSCertificate
     public var algorithm      : X509Algorithm
-    public var signature      : [UInt8]
-    public var bytes          : [UInt8] { return encode() }
-    public var data           : Data    { return Data(bytes) }
-    public var fingerprint    : [UInt8] { return fingerprint(using: .sha1) }
+    public var signature      : Data
+    public var fingerprint    : Data  { return fingerprint(using: .sha1) }
+    public var data           : Data? { return try? DEREncoder().encode(self) }
     
     // MARK: - Initializers
     
-    public init(tbsCertificate: X509TBSCertificate, algorithm: X509Algorithm, signature: [UInt8])
+    public init(tbsCertificate: X509TBSCertificate, algorithm: X509Algorithm, signature: Data)
     {
         self.tbsCertificate = tbsCertificate
         self.algorithm      = algorithm
         self.signature      = signature
     }
 
-    public init?(from data: Data)
+    // MARK: - ASN1Codable
+
+    public init(from decoder: ASN1Decoder) throws
     {
-        do {
-            let decoder = DERDecoder(data: data)
-            
-            try self.init(decoder: decoder)
-            try decoder.assertAtEnd()
-        }
-        catch {
-            return nil
-        }
-    }
-    
-    public init(decoder: DERDecoder) throws
-    {
-        let sequence = try decoder.decoderFromSequence()
+        let sequence = try decoder.sequence()
+
+        tbsCertificate = try sequence.decode(X509TBSCertificate.self)
+        algorithm      = try sequence.decode(X509Algorithm.self)
+        signature      = try Data(sequence.decode(ASN1BitString.self).bytes)
         
-        tbsCertificate = try X509TBSCertificate(decoder: sequence)
-        algorithm      = try X509Algorithm(decoder: sequence)
-        signature      = try sequence.decodeBitString()
         try sequence.assertAtEnd()
     }
-    
+
+    public func encode(to encoder: ASN1Encoder) throws
+    {
+        let sequence = try encoder.sequence()
+
+        try sequence.encode(tbsCertificate)
+        try sequence.encode(algorithm)
+        try sequence.encode(ASN1BitString(bytes: [UInt8](signature)))
+    }
+
     // MARK: - Fingerprint
     
-    public func fingerprint(using digestType: DigestType) -> [UInt8]
+    public func fingerprint(using digestType: DigestType) -> Data
     {
-        let digest = SecurityManagerShared.main.digest(ofType: digestType)
-        return digest.hash(bytes: bytes)
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        let sequence = DEREncoder()
-        
-        sequence.encode(tbsCertificate)
-        sequence.encode(algorithm)
-        sequence.encodeBitString(bytes: signature)
-        
-        encoder.encodeSequence(bytes: sequence.bytes)
-    }
-    
-    private func encode() -> [UInt8]
-    {
-        let encoder = DEREncoder()
-        
-        encoder.encode(self)
-        
-        return encoder.bytes
+        var fingerprint: Data!
+
+        do {
+            let data    = try DEREncoder().encode(self)
+            let digest  = SecurityManagerShared.main.digest(ofType: digestType)
+
+            fingerprint = digest.hash(data: data)
+        }
+        catch {
+
+        }
+
+        return fingerprint
     }
     
 }

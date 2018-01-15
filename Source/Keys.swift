@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,17 +22,16 @@
 import Foundation
 
 
-// Common JSON keys.
-public let KeyAuthorization    = "authorization"
-public let KeyCertificate      = "certificate"
-public let KeyCertificateChain = "certificateChain"
-public let KeyCredentials      = "credentials"
-public let KeyIdentity         = "identity"
-public let KeyName             = "name"
-public let KeyOperations       = "operations"
-public let KeyPrincipal        = "principal"
-public let KeyType             = "type"
+// JSON Keys
+let keyAuthorization    = "authorization"
+let keyCertificate      = "certificate"
+let keyCertificateChain = "certificateChain"
+let keyCredentials      = "credentials"
+let keyIdentity         = "identity"
+let keyName             = "name"
+let keyOperations       = "operations"
+let keyPrincipal        = "principal"
+let keyType             = "type"
 
 
 // End of File
-

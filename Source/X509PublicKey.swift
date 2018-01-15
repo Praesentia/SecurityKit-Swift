@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import Foundation
 /**
  X509 PublicKey
  */
-public struct X509PublicKey: DERCodable {
+public struct X509PublicKey: ASN1Codable {
     
     // MARK: - Properties
     public var bytes : [UInt8]
@@ -42,24 +42,26 @@ public struct X509PublicKey: DERCodable {
     {
         self.init(bytes: [UInt8](data))
     }
-    
+
+    // MARK: - ASN1Codable
+
     /**
      Initialize instance from decoder.
      
      - Requirement: RFC 5280
      */
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let bytes = try decoder.decodeBitString()
+        let container = try decoder.container()
+        let bytes     = try container.decode(ASN1BitString.self).bytes
         
         self.init(bytes: bytes)
     }
     
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        encoder.encodeBitString(bytes: [UInt8](data))
+        let container = try encoder.container()
+        try container.encode(ASN1BitString(bytes: [UInt8](data)))
     }
     
 }

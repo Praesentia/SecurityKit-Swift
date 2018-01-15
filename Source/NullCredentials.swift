@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -32,9 +32,14 @@ public class NullCredentials: Credentials {
 
     // MARK: - Properties
     public let identity : Identity?          = nil
-    public var profile  : Any                { return getProfile() }
     public var type     : CredentialsType    { return .null }
     public let validity : ClosedRange<Date>? = nil
+    
+    // MARK: - Private
+    
+    private enum CodingKeys: CodingKey {
+        case type
+    }
     
     // MARK: - Initializers
     
@@ -42,6 +47,16 @@ public class NullCredentials: Credentials {
      Initialize instance.
      */
     private init()
+    {
+    }
+    
+    // MAKR: - Codable
+    
+    required public init(from decoder: Decoder) throws
+    {
+    }
+    
+    public func encode(to encoder: Encoder) throws
     {
     }
     
@@ -63,7 +78,7 @@ public class NullCredentials: Credentials {
         - bytes: The bytes being signed.  This will typically be a hash value
                  of the actual data.
      */
-    public func sign(bytes: [UInt8], using digestType: DigestType) -> [UInt8]?
+    public func sign(data: Data, using digestType: DigestType) -> Data?
     {
         return nil
     }
@@ -77,18 +92,9 @@ public class NullCredentials: Credentials {
         - bytes: The bytes that were originally signed.  This will typically be
                 a hash value of the actual data.
      */
-    public func verify(signature: [UInt8], for bytes: [UInt8], using digestType: DigestType) -> Bool
+    public func verify(signature: Data, for data: Data, using digestType: DigestType) -> Bool
     {
         return false
-    }
-    
-    private func getProfile() -> Any
-    {
-        var profile = [String : Any]()
-        
-        profile[KeyType] = type.string
-        
-        return profile
     }
     
 }

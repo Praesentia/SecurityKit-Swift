@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2016-2017 Jon Griffeth
+ Copyright 2016-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,10 +24,9 @@ import Foundation
 /**
  Authorization protocol.
  */
-public protocol Authorization: class {
+public protocol Authorization: class, Codable {
     
     var expires : TimeInterval?     { get }
-    var profile : Any               { get }
     var string  : String            { get }
     var type    : AuthorizationType { get } //: Identifies the type of authorization credentials.
     

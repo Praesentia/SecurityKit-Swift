@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2017 Jon Griffeth
+ Copyright 2017-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,49 +27,26 @@ import Foundation
  
  - Requirement: RFC-5280
  */
-public struct X509ExtendedKeyUsage: DERCodable {
+public struct X509ExtendedKeyUsage: ASN1Codable {
     
     // MARK: - Properties
-    public var purposeIdentifiers = [OID]()
-    
+    public var purposeIdentifiers = [ASN1OID]()
+
+    // MARK: - ASN1Codable
+
     /**
      Initialize instance from extension.
      */
-    public init(decoder: DERDecoder) throws
+    public init(from decoder: ASN1Decoder) throws
     {
-        let sequence = try decoder.decoderFromSequence()
-        
-        purposeIdentifiers = []
-        
-        repeat {
-            let purposeIdentifier = try OID(decoder: sequence)
-            purposeIdentifiers.append(purposeIdentifier)
-        } while sequence.more
-        
-        try sequence.assertAtEnd()
+        let sequence       = try decoder.sequence()
+        purposeIdentifiers = try sequence.decode([ASN1OID].self)
     }
     
-    /**
-     Initialize instance from extension.
-     */
-    public init(from extn: X509Extension) throws
+    public func encode(to encoder: ASN1Encoder) throws
     {
-        let decoder = DERDecoder(bytes: extn.extnValue)
-        try self.init(decoder: decoder)
-        try decoder.assertAtEnd()
-    }
-    
-    // MARK: - DERCodable
-    
-    public func encode(encoder: DEREncoder)
-    {
-        let sequence = DEREncoder()
-        
-        for purposeIdentifier in purposeIdentifiers {
-            sequence.encode(purposeIdentifier)
-        }
-        
-        encoder.encodeSequence(bytes: sequence.bytes)
+        let sequence = try encoder.sequence()
+        try sequence.encode(purposeIdentifiers)
     }
     
 }

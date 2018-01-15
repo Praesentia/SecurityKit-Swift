@@ -2,7 +2,7 @@
  -----------------------------------------------------------------------------
  This source file is part of SecurityKit.
  
- Copyright 2016-2017 Jon Griffeth
+ Copyright 2016-2018 Jon Griffeth
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -32,51 +32,19 @@ import Foundation
     Principal instances are immutable to prevent unintended side-effects.
     Changes to a principal requires the creation of a new instance.
  */
-public class Principal {
+public class Principal: Codable {
     
     // MARK: - Properties
     public let authorization : Authorization
     public let credentials   : Credentials
     public let identity      : Identity
-    public var profile       : Any { return getProfile() }
-    
-    // MARK: - Class Initializers
 
-    /** Instantiate from profile.
-     */
-    public static func instantiate(from profile: Any, completionHandler completion: @escaping (Principal?, Error?) -> Void)
-    {
-        let profile       = profile as! [String : Any]
-        let identity      = Identity(from: profile[KeyIdentity]!)
-        let authorization = AuthorizationFactoryDB.main.instantiate(from: profile[KeyAuthorization]!)
-        var principal     : Principal?
-        let sync          = Sync()
-        
-        sync.incr()
-        SecurityManagerShared.main.instantiateCredentials(for: identity, from: profile[KeyCredentials]!) { credentials, error in
+    // MARK: - Private
 
-            if error == nil, let credentials = credentials {
-                sync.incr()
-                credentials.verifyTrust() { error in
-                    if error == nil {
-                        principal = Principal(identity: identity, credentials: credentials, authorization: authorization)
-                    }
-                    else {
-                        NSLog("Credentials for \"\(identity.string)\" are not trusted.")
-                    }
-                    sync.decr(error)
-                }
-            }
-            else {
-                NSLog("Credentials for \"%s\" are not valid.", identity.string)
-            }
-            
-            sync.decr(error)
-        }
-        
-        sync.close() { error in
-            completion(principal, error)
-        }
+    private enum CodingKeys: CodingKey {
+        case authorization
+        case credentials
+        case identity
     }
     
     // MARK: - Initializers
@@ -97,21 +65,25 @@ public class Principal {
     {
         return true // TODO
     }
-    
-    // MARK: - Profile
-    
-    /**
-     Get profile.
-     */
-    private func getProfile() -> Any
+
+    // MARK: - Codable
+
+    required public init(from decoder: Decoder) throws
     {
-        var profile = [String : Any]()
-        
-        profile[KeyIdentity]      = identity.profile
-        profile[KeyCredentials]   = credentials.profile
-        profile[KeyAuthorization] = authorization.profile
-        
-        return profile
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        authorization = try container.decode(AuthorizationCoder.self, forKey: .authorization).authorization
+        credentials   = try container.decode(CredentialsCoder.self,   forKey: .credentials).credentials
+        identity      = try container.decode(Identity.self,           forKey: .identity)
+    }
+
+    public func encode(to encoder: Encoder) throws
+    {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(AuthorizationCoder(authorization), forKey: .authorization)
+        try container.encode(CredentialsCoder(credentials),     forKey: .credentials)
+        try container.encode(identity,                          forKey: .identity)
     }
     
 }
