@@ -47,7 +47,37 @@ public protocol SecurityManager: class {
     func digest(ofType type: DigestType) -> Digest
     
     // MARK: - Random Data
-    
+
+    /**
+     Generate random value.
+     */
+    func random(_ type: Int.Type) -> Int
+
+    /**
+     Generate random value.
+     */
+    func random(_ type: UInt.Type) -> UInt
+
+    /**
+     Generate random value.
+     */
+    func random(_ type: UInt8.Type) -> UInt8
+
+    /**
+     Generate random value.
+     */
+    func random(_ type: UInt16.Type) -> UInt16
+
+    /**
+     Generate random value.
+     */
+    func random(_ type: UInt32.Type) -> UInt32
+
+    /**
+     Generate random value.
+     */
+    func random(_ type: UInt64.Type) -> UInt64
+
     /**
      Generate random bytes.
      
