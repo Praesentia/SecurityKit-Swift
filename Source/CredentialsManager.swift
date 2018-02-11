@@ -29,7 +29,7 @@ public protocol CredentialsManager {
     
     // MARK: - Properties
     
-    weak var delegate: CredentialsManagerDelegate? { get set }
+    var delegate: CredentialsManagerDelegate? { get set }
     
     /**
      Identity.

@@ -49,10 +49,10 @@ public enum TLSState {
 public protocol TLS: class {
 
     // MARK: - Properties
-    weak var delegate  : TLSDelegate?     { get set }
-    var      mode      : TLSMode          { get }
-    var      state     : TLSState         { get }
-    weak var stream    : TLSDataStream?   { get set }
+    var delegate  : TLSDelegate?     { get set }
+    var mode      : TLSMode          { get }
+    var state     : TLSState         { get }
+    var stream    : TLSDataStream?   { get set }
 
     // MARK: - State Management
 

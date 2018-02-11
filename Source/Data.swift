@@ -36,6 +36,18 @@ extension Data {
         }
     }
 
+    public init(base64encoded string: String) throws
+    {
+        let data = Data(base64Encoded: string)
+
+        if data != nil {
+            self = data!
+        }
+        else {
+            throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Invalid base64 encoded string."))
+        }
+    }
+
     private static func fromHexString(_ string: String) -> Data?
     {
         guard((string.count % 2) == 0) else { return nil }

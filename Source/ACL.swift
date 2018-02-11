@@ -29,15 +29,15 @@ public class ACL {
     
     class Subject {
         let         identity   : UUID // placeholder
-        private var operations : [UUID]
+        private var operations : [OperationType]
         
-        init(identity: UUID, operations: [UUID])
+        init(identity: UUID, operations: [OperationType])
         {
             self.identity   = identity
             self.operations = operations
         }
         
-        func authorized(operation: UUID) -> Bool
+        func authorized(operation: OperationType) -> Bool
         {
             return operations.contains(operation)
         }
@@ -55,7 +55,7 @@ public class ACL {
     /**
      Verify authorization.
      */
-    public func authorized(principal: Principal?, operation: UUID) -> Bool
+    public func authorized(principal: Principal?, operation: OperationType) -> Bool
     {
         if principal != nil {
             
